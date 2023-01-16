@@ -7,6 +7,7 @@ namespace TurboReader
 {
     public class TurboReader
     {
+
         /// <summary>
         /// CheckIfOnlyLetters method checks if the input string contains only letters.
         /// </summary>
