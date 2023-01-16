@@ -1,5 +1,5 @@
-﻿// To run this program, you need to add a reference to TurboReader.dll
-// csc Program.cs -reference:TurboReader.dll -target:exe -out:Hirsipuupeli.exe
+﻿// To run this program, you need to add a reference to words\words_fi.txt
+// dotnet run -- -f words\words_fi.txt
 
 using System;
 using System.IO;
