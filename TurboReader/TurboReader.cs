@@ -15,7 +15,8 @@ namespace TurboReader
         /// <returns>True if the input string contains only letters, False otherwise.</returns>
         public bool CheckIfOnlyLetters(string input)
         {
-            if (Regex.IsMatch(input, @"\d"))
+            // Check if input string contains only letters and no numbers or special characters
+            if (Regex.IsMatch(input, @"[^a-öA-Ö]"))
             {
                 return false;
             }
