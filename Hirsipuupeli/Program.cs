@@ -10,12 +10,25 @@ using System.Collections.Generic;
 
 namespace Hangman
 {
+    /// <summary>
+    /// The main program class that runs the hangman game.
+    /// </summary>
     class Program
     {
+        /// <summary>
+        /// The entry point of the program.
+        /// </summary>
+        /// <param name="args"> Command line arguments for the program.</param>
         static void Main(string[] args)
         {
+            // Parse the command line options and pass them to the RunOptions method
             Parser.Default.ParseArguments<Options>(args).WithParsed(RunOptions);
         }
+
+        /// <summary>
+        /// Runs the hangman game using the options provided.
+        /// </summary>
+        /// <param name="opts">The options for the hangman game.</param>
 
         private static void RunOptions(Options opts)
         {
@@ -107,8 +120,14 @@ namespace Hangman
         }
     }
 
+    /// <summary>
+    /// Class for storing the options for the program.
+    /// </summary>
     class Options
     {
+        /// <summary>
+        /// File path option, required and contains the path to a file containing a list of words, one per line.
+        /// </summary>
         [Option(
             'f',
             "file",
