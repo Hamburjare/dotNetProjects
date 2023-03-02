@@ -1,27 +1,49 @@
 using System;
 using System.Numerics;
+using Raylib_CsLo;
 
+namespace GameEngine6000;
 
-namespace AppleGame;
-
-class Transform {
+class Transform
+{
     public Vector2 position;
-    public float rotation;
-    public Vector2 scale;
     public float velocity;
 
-    public Transform(Vector2 position, float rotation, float velocity, Vector2 scale) {
+    public Transform(Vector2 position, float velocity)
+    {
         this.position = position;
-        this.rotation = rotation;
-        this.scale = scale;
         this.velocity = velocity;
     }
 
-    public Transform() {
+    public Transform()
+    {
         this.position = Vector2.Zero;
-        this.rotation = 0.0f;
-        this.scale = Vector2.One;
         this.velocity = 0.0f;
     }
-    
+
+    public void Update()
+    {
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyDown(KeyboardKey.KEY_D))
+        {
+            position.X += velocity;
+        }
+        else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT) || Raylib.IsKeyDown(KeyboardKey.KEY_A))
+        {
+            position.X -= velocity;
+        }
+
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_UP) || Raylib.IsKeyDown(KeyboardKey.KEY_W))
+        {
+            position.Y -= velocity;
+        }
+        else if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN) || Raylib.IsKeyDown(KeyboardKey.KEY_S))
+        {
+            position.Y += velocity;
+        }
+
+        // Prevent player from going outside the window
+
+        // position.X = Math.Clamp(position.X, 0, screen_width - width);
+        // position.Y = Math.Clamp(position.Y, 0, screen_height - height);
+    }
 }
