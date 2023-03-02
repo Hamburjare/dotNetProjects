@@ -1,6 +1,7 @@
 ﻿using System.Numerics;
 using Raylib_CsLo;
 using System;
+using GameEngine6000;
 
 namespace AppleGame;
 
@@ -38,10 +39,9 @@ class DrawGame
     {
         Player player = new Player(
             new Vector2(screen_height / 2, screen_width / 2),
-            50,
-            50,
             5.0f,
-            Raylib.BLUE
+            Raylib.BLUE,
+            new Vector2(50, 50)
         );
         Apple apple = new Apple(
             new Vector2(RandomX(screen_width), RandomY(screen_height)),
@@ -54,11 +54,27 @@ class DrawGame
 
         while (Raylib.WindowShouldClose() == false)
         {
-            player.Update(screen_width, screen_height);
+            player.transform.Update();
             player.Draw();
             apple.Draw();
             Draw();
-            Update(player, apple);
+            GameEngine6000.Collision collision = new GameEngine6000.Collision();
+
+            if (
+                collision.CheckCollision(
+                    player.spriteRenderer.GetRectangle(),
+                    apple.spriteRenderer.GetRectangle()
+                )
+            )
+            {
+                apple.transform.position.X = RandomX(
+                    screen_width - (int)apple.spriteRenderer.size.X
+                );
+                apple.transform.position.Y = RandomY(
+                    screen_height - (int)apple.spriteRenderer.size.Y
+                );
+            }
+            // Update(player, apple);
         }
 
         Raylib.CloseWindow();
@@ -72,95 +88,50 @@ class DrawGame
         Raylib.EndDrawing();
     }
 
-    private void Update(Player player, Apple apple)
-    {
-        
-        // check if player is colliding with apple
-        if (player.position.X < apple.position.X + apple.width &&
-            player.position.X + player.width > apple.position.X &&
-            player.position.Y < apple.position.Y + apple.height &&
-            player.position.Y + player.height > apple.position.Y)
-        {
-            // collision detected!
-            apple.position.X = RandomX(screen_width - apple.width);
-            apple.position.Y = RandomY(screen_height - apple.height);
-        }
-    }
 }
 
 class Player
 {
-    public Vector2 position;
-    public int width;
-    public int height;
-    public float velocity;
-
-    public Color color; // One of Raylib colors
+    public GameEngine6000.Transform transform;
+    public GameEngine6000.SpriteRenderer spriteRenderer;
 
     // Constructor, creates a new player
 
-    public Player(Vector2 position, int width, int height, float velocity, Color color)
+    public Player(Vector2 position, float velocity, Color color, Vector2 size)
     {
-        this.position = position;
-        this.width = width;
-        this.height = height;
-        this.color = color;
-        this.velocity = velocity;
-    }
+        transform = new GameEngine6000.Transform(position, velocity);
 
-    // Update is called every frame
-    public void Update(int screen_width, int screen_height)
-    {
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyDown(KeyboardKey.KEY_D))
-        {
-            position.X += velocity;
-        }
-        else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT) || Raylib.IsKeyDown(KeyboardKey.KEY_A))
-        {
-            position.X -= velocity;
-        }
-
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_UP) || Raylib.IsKeyDown(KeyboardKey.KEY_W))
-        {
-            position.Y -= velocity;
-        }
-        else if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN) || Raylib.IsKeyDown(KeyboardKey.KEY_S))
-        {
-            position.Y += velocity;
-        }
-
-        // Prevent player from going outside the window
-
-        position.X = Math.Clamp(position.X, 0, screen_width - width);
-        position.Y = Math.Clamp(position.Y, 0, screen_height - height);
+        spriteRenderer = new GameEngine6000.SpriteRenderer(position, color, size);
     }
 
     // Draw is called after Update()
     public void Draw()
     {
-        Raylib.DrawRectangle((int)this.position.X, (int)this.position.Y, width, height, color);
+        spriteRenderer.position = transform.position;
+        spriteRenderer.Draw();
     }
 }
 
 class Apple
 {
-    public Vector2 position;
-    public int width;
-    public int height;
-    public Color color;
+    public GameEngine6000.SpriteRenderer spriteRenderer;
+    public GameEngine6000.Transform transform;
 
     public Apple(Vector2 position, int width, int height, Color color)
     {
-        this.position = position;
-        this.width = width;
-        this.height = height;
-        this.color = color;
+        transform = new GameEngine6000.Transform(position, 0.0f);
+
+        spriteRenderer = new GameEngine6000.SpriteRenderer(
+            position,
+            color,
+            new Vector2(width, height)
+        );
     }
 
     public void Draw()
     {
-        Raylib.DrawRectangle((int)this.position.X, (int)this.position.Y, width, height, color);
+        spriteRenderer.position = transform.position;
+        spriteRenderer.Draw();
     }
-
-    
 }
+
