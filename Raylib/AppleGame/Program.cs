@@ -73,8 +73,7 @@ class DrawGame
                 apple.transform.position.Y = RandomY(
                     screen_height - (int)apple.spriteRenderer.size.Y
                 );
-            }
-            // Update(player, apple);
+            }    
         }
 
         Raylib.CloseWindow();
