@@ -58,6 +58,9 @@ class Player
         // Read input
         KeyPressed();
 
+        // Mouse movement
+        MouseMovement();
+
         // Draw player
         sprite.position = transform.position;
         sprite.Draw();
@@ -68,6 +71,18 @@ class Player
             0,
             Raylib.GetScreenWidth() - sprite.size.X
         );
+    }
+
+    /// <summary>
+    /// Method <c>MouseMovement</c> is used to move the player with the mouse.
+    /// </summary>
+    /// <remarks>
+    /// The method gets the mouse position.
+    /// The method sets the player's position to the mouse's position.
+    /// </remarks>
+    void MouseMovement() {
+        Vector2 mousePosition = Raylib.GetMousePosition();
+        transform.position.X = mousePosition.X;
     }
 
     /// <summary>
