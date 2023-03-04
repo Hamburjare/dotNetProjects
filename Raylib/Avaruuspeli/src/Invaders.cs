@@ -5,30 +5,45 @@ using GameEngine6000;
 
 namespace Avaruuspeli;
 
+///<summary>
+/// Class <c>Invaders</c> is the main class of the game.
+///</summary>
+
 class Invaders
 {
+    ///<summary>
+    /// Method <c>Run</c> is the main method of the game.
+    ///</summary>
     public void Run()
     {
+        /* Creating a new instance of the Random class. */
         Random random = new Random();
+
+        /* Creating a list of enemies, bullets and enemy bullets. */
         List<Enemy> enemies = new List<Enemy>();
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> enemyBullets = new List<Bullet>();
-        float playerShootCooldown = 0.0f;
 
-        
-
+        /* Initializing the window and setting the FPS to 60. */
         Raylib.InitWindow(800, 900, "Space Invaders");
         Raylib.SetTargetFPS(60);
         Raylib.InitAudioDevice();
 
+        /* Creating a new instance of the Player class and the GameManager class. */
         Player player = new Player(new Vector2(400, 830), 5.0f);
         GameManager gameManager = new GameManager();
 
-
+        /* Variables for SFX */
         Sound shootSound;
         Sound explosionSound;
         Sound hitSound;
 
+        /* A variable that is used to make the player shoot only once every 0.75 seconds. */
+        float playerShootCooldown = 0.0f;
+
+        int enemyShootMultiplier = 1;
+
+        /* Calling the methods `SpawnEnemies()` and `LoadSounds()` */
         SpawnEnemies();
         LoadSounds();
 
@@ -37,54 +52,53 @@ class Invaders
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Raylib.BLACK);
 
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0)
-            {
-                if (gameManager.IsGameOver())
-                {
-                    return;
-                }
+            /* Calling the method `PlayerShoot()` */
+            PlayerShoot();
 
-                Bullet bullet = new Bullet();
-                Vector2 bulletPosition = new Vector2(
-                    player.transform.position.X + player.sprite.size.X / 2,
-                    player.transform.position.Y
-                );
-                bullet.SetActive(bulletPosition, 10.0f);
-                bullets.Add(bullet);
-
-                Raylib.PlaySound(shootSound);
-
-                playerShootCooldown = .75f;
-            }
-
-            playerShootCooldown -= Raylib.GetFrameTime();
-
+            /* Checking if the key R is pressed. If it is, it calls the method `RestartGame()`. */
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_R))
             {
                 RestartGame();
             }
 
+            /* Moving the bullets up. Bullets are shooted by player*/
             foreach (Bullet bullet in bullets)
             {
                 bullet.transform.position.Y -= bullet.transform.velocity;
                 bullet.Update();
             }
 
+            /* Updating the enemies. */
             foreach (Enemy enemy in enemies)
             {
                 enemy.Update();
             }
 
+            /* Checking for collisions between the player and the enemies. */
             CheckForCollisions();
+
+            /* Calling the method `EnemyShoot()`. */
             EnemyShoot();
+
+            /* It checks if the game is over. */
             CheckGameProgress();
 
+            /* Updating the game manager. */
             gameManager.Update();
 
+            /* Updating the player. */
             player.Update();
 
             Raylib.EndDrawing();
         }
+
+        ///<summary>
+        /// Method <c>CheckGameProgress</c> checks if the game is over or all the enemies are dead.
+        ///</summary>
+        ///<remarks>
+        /// If the game is over, it calls the method `GameOver()`.
+        /// If all the enemies are dead, it calls the method `SpawnEnemies()`.
+        ///</remarks>
 
         void CheckGameProgress()
         {
@@ -118,6 +132,14 @@ class Invaders
             }
         }
 
+        ///<summary>
+        /// Method <c>GameOver</c> is called when the game is over.
+        ///</summary>
+        ///<remarks>
+        /// It sets the game over to true, stops the enemies from moving and stops the player from moving.
+        /// It also draws the text "Game Over!", "Press Enter to restart", Players score, how long the player was alive and how many enemies player killed.
+        /// If the key Enter is pressed, it calls the method `RestartGame()`.
+        ///</remarks>
         void GameOver()
         {
             foreach (Enemy enemy in enemies)
@@ -145,6 +167,9 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// <c>RestartGame()</c> is a function that resets the game to its original state
+        /// </summary>
         void RestartGame()
         {
             bullets.Clear();
@@ -154,12 +179,47 @@ class Invaders
             {
                 enemy.SetActivityTrue();
             }
-            
+
             player.SetCanMove(true);
             gameManager.Reset();
             SpawnEnemies();
         }
 
+        /// <summary>
+        /// If the space bar is pressed and the player's shoot cooldown is less than or equal to 0, then
+        /// create a new bullet, set its position, and add it to the list of bullets
+        /// </summary>
+        void PlayerShoot()
+        {
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0)
+            {
+                if (gameManager.IsGameOver())
+                {
+                    return;
+                }
+
+                Bullet bullet = new Bullet();
+                Vector2 bulletPosition = new Vector2(
+                    player.transform.position.X + player.sprite.size.X / 2,
+                    player.transform.position.Y
+                );
+                bullet.SetActive(bulletPosition, 10.0f);
+                bullets.Add(bullet);
+
+                Raylib.PlaySound(shootSound);
+
+                playerShootCooldown = .75f;
+            }
+
+            playerShootCooldown -= Raylib.GetFrameTime();
+        }
+
+        /// <summary>
+        /// This function checks if the game is over, if it isn't, it loops through the enemies and
+        /// checks if they are active, if they are, it checks if the random value is less than the
+        /// enemyShootMultiplier, if it is, it creates a new bullet, sets the bullet's position, and
+        /// adds it to the enemyBullets list
+        /// </summary>
         void EnemyShoot()
         {
             if (gameManager.IsGameOver())
@@ -174,8 +234,7 @@ class Invaders
                     continue;
                 }
 
-                // Shoot every 2-4 seconds
-                if (Raylib.GetRandomValue(0, 1001) < 1)
+                if (Raylib.GetRandomValue(0, 1001) < enemyShootMultiplier)
                 {
                     Bullet bullet = new Bullet();
                     Vector2 bulletPosition = new Vector2(
@@ -186,6 +245,8 @@ class Invaders
                     enemyBullets.Add(bullet);
                 }
             }
+
+            /* Looping through the enemyBullets array and updating each bullet. */
             foreach (Bullet bullet in enemyBullets)
             {
                 bullet.transform.position.Y += bullet.transform.velocity;
@@ -193,6 +254,10 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// Check for collisions between player bullets and enemies, player and enemy bullets, and
+        /// enemies and enemies
+        /// </summary>
         void CheckForCollisions()
         {
             // Player shooted bullets
@@ -222,6 +287,11 @@ class Invaders
                         gameManager.AddEnemyCount(1);
                         gameManager.AddScoreMultiplier((float)random.NextDouble());
                         Raylib.PlaySound(hitSound);
+
+                        if(Raylib.GetRandomValue(0, 500) < 1)
+                        {
+                            enemyShootMultiplier += 1;
+                        }
                     }
                 }
             }
@@ -272,7 +342,7 @@ class Invaders
                     {
                         // enemies cant go trough each other
 
-                        // if enemy is on the left side of enemy2   
+                        // if enemy is on the left side of enemy2
                         if (enemy.transform.position.X < enemy2.transform.position.X)
                         {
                             enemy.transform.position.X -= 1;
@@ -288,6 +358,9 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// If there are no enemies, spawn them. If there are enemies, make them active
+        /// </summary>
         void SpawnEnemies()
         {
             if (enemies.Count == 0)
@@ -311,6 +384,9 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// Loads the sounds from the resources folder
+        /// </summary>
         void LoadSounds()
         {
             hitSound = Raylib.LoadSound("resources/sounds/hit.wav");
@@ -320,6 +396,4 @@ class Invaders
 
         Raylib.CloseWindow();
     }
-
-    
 }
