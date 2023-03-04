@@ -192,7 +192,7 @@ class Invaders
         /// </summary>
         void PlayerShoot()
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0)
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0 || Raylib.IsMouseButtonPressed(0) && playerShootCooldown <= 0)
             {
                 if (gameManager.IsGameOver())
                 {
@@ -371,7 +371,7 @@ class Invaders
                     for (int j = 0; j < 10; j++)
                     {
                         Enemy enemy = new Enemy();
-                        enemy.SetActive(new Vector2(40 + j * 75, 100 + i * 75), 1.0f);
+                        enemy.SetActive(new Vector2(40 + j * 75, 130 + i * 75), 1.0f);
                         enemies.Add(enemy);
                     }
                 }

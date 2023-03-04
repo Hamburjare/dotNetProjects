@@ -20,6 +20,9 @@ class Player
     /* A boolean variable that is used to check if the player can move or not. */
     bool canMove = true;
 
+    //If true player uses keyboard if false player uses mouse
+    bool keyboardMovement = true;
+
     /// <summary>
     /// The constructor for the Player class.
     /// </summary>
@@ -55,11 +58,21 @@ class Player
     /// </remarks>
     public void Update()
     {
-        // Read input
-        KeyPressed();
+        if(keyboardMovement)
+        {
+            // Read input
+            KeyPressed();
+        }
+        else
+        {
+            // Mouse movement
+            MouseMovement();
+        }
 
-        // Mouse movement
-        MouseMovement();
+        if(Raylib.IsKeyPressed(KeyboardKey.KEY_I))
+        {
+            keyboardMovement = !keyboardMovement;
+        }
 
         // Draw player
         sprite.position = transform.position;

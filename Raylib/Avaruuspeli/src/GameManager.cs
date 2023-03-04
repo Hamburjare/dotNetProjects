@@ -41,6 +41,7 @@ class GameManager
         Raylib.DrawText("Score: " + score, 10, 10, 20, Raylib.WHITE);
         Raylib.DrawText("Health: " + health, 10, 40, 20, Raylib.WHITE);
         Raylib.DrawText("Score multiplier: " + scoreMultiplier.ToString("n2"), 10, 70, 20, Raylib.WHITE);
+        Raylib.DrawText("Switch input mode: I", 10, 100, 20, Raylib.WHITE);
     }
 
     /// <summary>
