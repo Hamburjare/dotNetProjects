@@ -15,13 +15,22 @@ class Invaders
         List<Bullet> enemyBullets = new List<Bullet>();
         float playerShootCooldown = 0.0f;
 
+        
+
         Raylib.InitWindow(800, 900, "Space Invaders");
         Raylib.SetTargetFPS(60);
+        Raylib.InitAudioDevice();
 
         Player player = new Player(new Vector2(400, 830), 5.0f);
         GameManager gameManager = new GameManager();
 
+
+        Sound shootSound;
+        Sound explosionSound;
+        Sound hitSound;
+
         SpawnEnemies();
+        LoadSounds();
 
         while (!Raylib.WindowShouldClose())
         {
@@ -42,6 +51,8 @@ class Invaders
                 );
                 bullet.SetActive(bulletPosition, 10.0f);
                 bullets.Add(bullet);
+
+                Raylib.PlaySound(shootSound);
 
                 playerShootCooldown = .75f;
             }
@@ -81,6 +92,7 @@ class Invaders
             {
                 if (!gameManager.IsGameOver())
                 {
+                    Raylib.PlaySound(explosionSound);
                     gameManager.SetTime(Raylib.GetTime());
                 }
 
@@ -209,6 +221,7 @@ class Invaders
                         gameManager.AddScore(10);
                         gameManager.AddEnemyCount(1);
                         gameManager.AddScoreMultiplier((float)random.NextDouble());
+                        Raylib.PlaySound(hitSound);
                     }
                 }
             }
@@ -229,6 +242,7 @@ class Invaders
                 {
                     gameManager.RemoveHealth(1);
                     bullet.SetActivityFalse();
+                    Raylib.PlaySound(hitSound);
                 }
             }
 
@@ -297,6 +311,15 @@ class Invaders
             }
         }
 
+        void LoadSounds()
+        {
+            hitSound = Raylib.LoadSound("resources/sounds/hit.wav");
+            shootSound = Raylib.LoadSound("resources/sounds/shoot.wav");
+            explosionSound = Raylib.LoadSound("resources/sounds/explosion.wav");
+        }
+
         Raylib.CloseWindow();
     }
+
+    
 }
