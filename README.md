@@ -1,11 +1,10 @@
 # Kalle Suikkari
-## Dotnet projects from school
+### Dotnet projects from school
 
 This repository contains a collection of dotnet projects.
 
-### Installation
+## Installation
 
-## INSTALLATION
 1. Install [.NET Core](https://www.microsoft.com/net/core)
 2. Clone the repository
 3. Locate the project folder
