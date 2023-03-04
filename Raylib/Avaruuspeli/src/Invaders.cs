@@ -160,6 +160,14 @@ class Invaders
                 30,
                 Raylib.RED
             );
+            if (player.GetKeyboardMovement())
+            {
+                Raylib.DrawText("Want to change to keyboard control? Press 'I'", 40, 700, 30, Raylib.RED);
+            }
+            else
+            {
+                Raylib.DrawText("Want to change to mouse control? Press 'I'", 70, 700, 30, Raylib.RED);
+            }
 
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
             {
@@ -192,7 +200,14 @@ class Invaders
         /// </summary>
         void PlayerShoot()
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0 && player.GetKeyboardMovement() || Raylib.IsMouseButtonPressed(0) && playerShootCooldown <= 0 && !player.GetKeyboardMovement())
+            if (
+                Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE)
+                    && playerShootCooldown <= 0
+                    && player.GetKeyboardMovement()
+                || Raylib.IsMouseButtonPressed(0)
+                    && playerShootCooldown <= 0
+                    && !player.GetKeyboardMovement()
+            )
             {
                 if (gameManager.IsGameOver())
                 {
@@ -289,7 +304,7 @@ class Invaders
                         gameManager.AddScoreMultiplier((float)random.NextDouble());
                         Raylib.PlaySound(hitSound);
 
-                        if(Raylib.GetRandomValue(0, 500) < 1)
+                        if (Raylib.GetRandomValue(0, 500) < 1)
                         {
                             enemyShootMultiplier += 1;
                         }
