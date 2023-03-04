@@ -94,8 +94,22 @@ class Player
     /// The method sets the player's position to the mouse's position.
     /// </remarks>
     void MouseMovement() {
+
+        if(!canMove)
+        {
+            return;
+        }
+
         Vector2 mousePosition = Raylib.GetMousePosition();
         transform.position.X = mousePosition.X;
+    }
+
+    /// <summary>
+    /// Gets whether player uses keyboard or mouse for movement
+    /// </summary>
+    public bool GetKeyboardMovement()
+    {
+        return keyboardMovement;
     }
 
     /// <summary>

@@ -192,7 +192,7 @@ class Invaders
         /// </summary>
         void PlayerShoot()
         {
-            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0 || Raylib.IsMouseButtonPressed(0) && playerShootCooldown <= 0)
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE) && playerShootCooldown <= 0 && player.GetKeyboardMovement() || Raylib.IsMouseButtonPressed(0) && playerShootCooldown <= 0 && !player.GetKeyboardMovement())
             {
                 if (gameManager.IsGameOver())
                 {
