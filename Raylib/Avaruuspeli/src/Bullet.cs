@@ -14,12 +14,11 @@ class Bullet
     public Bullet()
     {
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 10.0f);
-        sprite = new SpriteRenderer(new Vector2(0, 0), Raylib.WHITE, new Vector2(10, 10));
+        sprite = new SpriteRenderer(new Vector2(0, 0), new Vector2(10, 10), Raylib.WHITE);
     }
 
     public void Update()
     {
-
         // If bullet is not active, return
         if (!isActive)
         {

@@ -14,12 +14,17 @@ class Enemy
 
     public GameEngine6000.Transform transform;
     public SpriteRenderer sprite;
-    
 
     public Enemy()
     {
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 5.0f);
-        sprite = new SpriteRenderer(new Vector2(0, 0), Raylib.WHITE, new Vector2(50, 50), "./resources/textures/hjallis.png");
+        
+        sprite = new SpriteRenderer(
+            new Vector2(815, 290),
+            new Vector2(50, 50),
+            Raylib.WHITE,
+            "./resources/textures/hjallis.png"
+        );
     }
 
     public void Update()
@@ -36,12 +41,16 @@ class Enemy
 
         // Move enemy
         MoveEnemy();
-
     }
 
     public void SetActivityFalse()
     {
         isActive = false;
+    }
+
+    public void SetActivityTrue()
+    {
+        isActive = true;
     }
 
     public bool IsActive()
@@ -63,8 +72,7 @@ class Enemy
 
     void MoveEnemy()
     {
-
-        if(!canMove)
+        if (!canMove)
         {
             return;
         }
@@ -79,6 +87,10 @@ class Enemy
             transform.position.X -= transform.velocity;
         }
 
-        transform.position.X = Math.Clamp(transform.position.X, 0, Raylib.GetScreenWidth() - sprite.size.X);
+        transform.position.X = Math.Clamp(
+            transform.position.X,
+            0,
+            Raylib.GetScreenWidth() - sprite.size.X
+        );
     }
 }

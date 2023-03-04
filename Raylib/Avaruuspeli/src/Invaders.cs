@@ -9,11 +9,11 @@ class Invaders
 {
     public void Run()
     {
+        Random random = new Random();
         List<Enemy> enemies = new List<Enemy>();
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> enemyBullets = new List<Bullet>();
         float playerShootCooldown = 0.0f;
-
 
         Raylib.InitWindow(800, 900, "Space Invaders");
         Raylib.SetTargetFPS(60);
@@ -34,9 +34,13 @@ class Invaders
                 {
                     return;
                 }
-                
+
                 Bullet bullet = new Bullet();
-                bullet.SetActive(player.transform.position, 10.0f);
+                Vector2 bulletPosition = new Vector2(
+                    player.transform.position.X + player.sprite.size.X / 2,
+                    player.transform.position.Y
+                );
+                bullet.SetActive(bulletPosition, 10.0f);
                 bullets.Add(bullet);
 
                 playerShootCooldown = .75f;
@@ -51,10 +55,6 @@ class Invaders
 
             foreach (Bullet bullet in bullets)
             {
-                if (gameManager.IsGameOver())
-                {
-                    return;
-                }
                 bullet.transform.position.Y -= bullet.transform.velocity;
                 bullet.Update();
             }
@@ -83,6 +83,7 @@ class Invaders
                 {
                     gameManager.SetTime(Raylib.GetTime());
                 }
+
                 GameOver();
             }
 
@@ -113,8 +114,8 @@ class Invaders
             }
             gameManager.SetGameOver(true);
             player.SetCanMove(false);
-            Raylib.DrawText("Game Over!", 300, 400, 50, Raylib.RED);
 
+            Raylib.DrawText("Game Over!", 300, 400, 50, Raylib.RED);
             Raylib.DrawText("Press Enter to restart", 250, 500, 30, Raylib.RED);
             Raylib.DrawText("Your score was: " + gameManager.GetScore(), 250, 550, 30, Raylib.RED);
             Raylib.DrawText("Your time was: " + gameManager.GetTime(), 250, 600, 30, Raylib.RED);
@@ -134,18 +135,14 @@ class Invaders
 
         void RestartGame()
         {
+            bullets.Clear();
+            enemyBullets.Clear();
+
             foreach (Enemy enemy in enemies)
             {
-                enemy.SetActivityFalse();
+                enemy.SetActivityTrue();
             }
-            foreach (Bullet bullet in bullets)
-            {
-                bullet.SetActivityFalse();
-            }
-            foreach (Bullet bullet in enemyBullets)
-            {
-                bullet.SetActivityFalse();
-            }
+            
             player.SetCanMove(true);
             gameManager.Reset();
             SpawnEnemies();
@@ -169,7 +166,11 @@ class Invaders
                 if (Raylib.GetRandomValue(0, 1001) < 1)
                 {
                     Bullet bullet = new Bullet();
-                    bullet.SetActive(enemy.transform.position, 5.0f);
+                    Vector2 bulletPosition = new Vector2(
+                        enemy.transform.position.X + enemy.sprite.size.X / 2,
+                        enemy.transform.position.Y
+                    );
+                    bullet.SetActive(bulletPosition, 5.0f);
                     enemyBullets.Add(bullet);
                 }
             }
@@ -207,6 +208,7 @@ class Invaders
                         bullet.SetActivityFalse();
                         gameManager.AddScore(10);
                         gameManager.AddEnemyCount(1);
+                        gameManager.AddScoreMultiplier((float)random.NextDouble());
                     }
                 }
             }
@@ -229,17 +231,68 @@ class Invaders
                     bullet.SetActivityFalse();
                 }
             }
+
+            // enemies colliding with each other
+            foreach (Enemy enemy in enemies)
+            {
+                if (!enemy.IsActive())
+                {
+                    continue;
+                }
+                foreach (Enemy enemy2 in enemies)
+                {
+                    if (!enemy2.IsActive())
+                    {
+                        continue;
+                    }
+                    if (enemy == enemy2)
+                    {
+                        continue;
+                    }
+                    if (
+                        collision.CheckCollision(
+                            enemy.sprite.GetRectangle(),
+                            enemy2.sprite.GetRectangle()
+                        )
+                    )
+                    {
+                        // enemies cant go trough each other
+
+                        // if enemy is on the left side of enemy2   
+                        if (enemy.transform.position.X < enemy2.transform.position.X)
+                        {
+                            enemy.transform.position.X -= 1;
+                            enemy2.transform.position.X += 1;
+                        }
+                        else
+                        {
+                            enemy.transform.position.X += 1;
+                            enemy2.transform.position.X -= 1;
+                        }
+                    }
+                }
+            }
         }
 
         void SpawnEnemies()
         {
-            for (int i = 0; i < 5; i++)
+            if (enemies.Count == 0)
             {
-                for (int j = 0; j < 10; j++)
+                for (int i = 0; i < 5; i++)
                 {
-                    Enemy enemy = new Enemy();
-                    enemy.SetActive(new Vector2(40 + j * 75, 100 + i * 75), 1.0f);
-                    enemies.Add(enemy);
+                    for (int j = 0; j < 10; j++)
+                    {
+                        Enemy enemy = new Enemy();
+                        enemy.SetActive(new Vector2(40 + j * 75, 100 + i * 75), 1.0f);
+                        enemies.Add(enemy);
+                    }
+                }
+            }
+            else
+            {
+                foreach (Enemy enemy in enemies)
+                {
+                    enemy.SetActivityTrue();
                 }
             }
         }

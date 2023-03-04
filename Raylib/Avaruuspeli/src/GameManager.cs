@@ -14,10 +14,13 @@ class GameManager
 
     double time = 0;
 
+    float scoreMultiplier = 1.0f;
+
     public void Update()
     {
         Raylib.DrawText("Score: " + score, 10, 10, 20, Raylib.WHITE);
         Raylib.DrawText("Health: " + health, 10, 40, 20, Raylib.WHITE);
+        Raylib.DrawText("Score multiplier: " + scoreMultiplier, 10, 70, 20, Raylib.WHITE);
     }
 
     public void Reset()
@@ -45,7 +48,7 @@ class GameManager
 
     public void AddScore(int amount)
     {
-        score += amount;
+        score += amount * (int)scoreMultiplier;
     }
 
     public void ResetScore()
@@ -57,6 +60,17 @@ class GameManager
     {
         return score;
     }
+
+    public void AddScoreMultiplier(float value)
+    {
+        scoreMultiplier += value;
+    }
+
+    public float GetScoreMultiplier()
+    {
+        return scoreMultiplier;
+    }
+
 
     public void SetGameOver(bool value)
     {
