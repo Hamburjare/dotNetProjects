@@ -25,7 +25,7 @@ class Enemy
     /// <summary>
     /// The constructor for the Enemy class.
     /// </summary>
-    public Enemy()
+    public Enemy(Texture texture)
     {
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 5.0f);
 
@@ -33,7 +33,7 @@ class Enemy
             new Vector2(815, 290),
             new Vector2(50, 50),
             Raylib.WHITE,
-            "./resources/textures/hjallis.png"
+            texture
         );
     }
 

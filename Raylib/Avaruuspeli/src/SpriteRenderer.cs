@@ -57,6 +57,29 @@ class SpriteRenderer
     /// <param name="position">The position of the sprite.</param>
     /// <param name="size">The size of the sprite.</param>
     /// <param name="color">The color of the sprite.</param>
+    /// <param name="texture">The texture of the sprite</param>
+    public SpriteRenderer(Vector2 position, Vector2 size, Color color, Texture texture)
+    {
+        this.position = position;
+        this.color = color;
+        this.size = size;
+        this.texture = texture;
+        texturePath = "abaduu";
+
+
+        /* Scaling the image to fit the rectangle. */
+        ScaleImage();
+
+        /* Setting the sourceRec to the rectangle that is used to draw the texture. */
+        sourceRec = GetRectangle();
+    }
+
+    /// <summary>
+    /// The constructor for the SpriteRenderer class.
+    /// </summary>
+    /// <param name="position">The position of the sprite.</param>
+    /// <param name="size">The size of the sprite.</param>
+    /// <param name="color">The color of the sprite.</param>
     public SpriteRenderer(Vector2 position, Vector2 size, Color color)
     {
         this.position = position;

@@ -38,6 +38,9 @@ class Invaders
         Sound explosionSound;
         Sound hitSound;
 
+        /* Variables for textures */
+        Texture enemyTexture = Raylib.LoadTexture("./resources/textures/hjallis.png");
+
         /* A variable that is used to make the player shoot only once every 0.75 seconds. */
         float playerShootCooldown = 0.0f;
 
@@ -385,7 +388,7 @@ class Invaders
                 {
                     for (int j = 0; j < 10; j++)
                     {
-                        Enemy enemy = new Enemy();
+                        Enemy enemy = new Enemy(enemyTexture);
                         enemy.SetActive(new Vector2(40 + j * 75, 130 + i * 75), 1.0f);
                         enemies.Add(enemy);
                     }
