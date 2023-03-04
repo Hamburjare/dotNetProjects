@@ -177,6 +177,7 @@ class Invaders
 
             foreach (Enemy enemy in enemies)
             {
+                enemy.SetCanMove(true);
                 enemy.SetActivityTrue();
             }
 
