@@ -143,7 +143,7 @@ class GameManager
     }
 
     /// <summary>
-    /// It returns the number of enemies in the game.
+    /// It returns the number of how many enemies player has killed.
     /// </summary>
     public int GetEnemyCount()
     {
