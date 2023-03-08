@@ -5,7 +5,7 @@ This repository contains a collection of dotnet projects.
 
 ## Installation
 
-1. Install [.NET Core](https://www.microsoft.com/net/core)
+1. Install [.NET Core 7.0](https://www.microsoft.com/net/core)
 2. Clone the repository
 3. Locate the project folder
 4. Run `dotnet restore`
