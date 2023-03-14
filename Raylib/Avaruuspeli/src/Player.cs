@@ -28,9 +28,9 @@ class Player
     /// </summary>
     /// <param name="position">The position of the player.</param>
     /// <param name="velocity">The velocity of the player.</param>
-    public Player(Vector2 position, float velocity)
+    public Player(Vector2 position, float maxVelocity)
     {
-        transform = new GameEngine6000.Transform(position, velocity);
+        transform = new GameEngine6000.Transform(position, 0.0f, maxVelocity, 0.5f, 0.5f);
         sprite = new SpriteRenderer(
             position,
             new Vector2(50, 50),
@@ -48,6 +48,31 @@ class Player
         this.canMove = canMove;
     }
 
+    public Vector2 ReadDirectionInput()
+    {
+        Vector2 direction = Vector2.Zero;
+        direction.X = 0;
+        direction.Y = 0;
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyDown(KeyboardKey.KEY_D))
+        {
+            direction.X = 1;
+        }
+        else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT) || Raylib.IsKeyDown(KeyboardKey.KEY_A))
+        {
+            direction.X = -1;
+        }
+        if (Raylib.IsKeyDown(KeyboardKey.KEY_UP) || Raylib.IsKeyDown(KeyboardKey.KEY_W))
+        {
+            direction.Y = -1;
+        }
+        else if (Raylib.IsKeyDown(KeyboardKey.KEY_DOWN) || Raylib.IsKeyDown(KeyboardKey.KEY_S))
+        {
+            direction.Y = 1;
+        }
+
+        return direction;
+    }
+
     /// <summary>
     /// Method <c>Update</c> is used to update the player.
     /// </summary>
@@ -58,7 +83,7 @@ class Player
     /// </remarks>
     public void Update()
     {
-        if(keyboardMovement)
+        if (keyboardMovement)
         {
             // Read input
             KeyPressed();
@@ -69,7 +94,7 @@ class Player
             MouseMovement();
         }
 
-        if(Raylib.IsKeyPressed(KeyboardKey.KEY_I))
+        if (Raylib.IsKeyPressed(KeyboardKey.KEY_I))
         {
             keyboardMovement = !keyboardMovement;
         }
@@ -93,9 +118,9 @@ class Player
     /// The method gets the mouse position.
     /// The method sets the player's position to the mouse's position.
     /// </remarks>
-    void MouseMovement() {
-
-        if(!canMove)
+    void MouseMovement()
+    {
+        if (!canMove)
         {
             return;
         }
@@ -122,17 +147,32 @@ class Player
     /// </remarks>
     public void KeyPressed()
     {
+        Vector2 newDirection = ReadDirectionInput();
         if (!canMove)
         {
             return;
         }
-        if (Raylib.IsKeyDown(KeyboardKey.KEY_RIGHT) || Raylib.IsKeyDown(KeyboardKey.KEY_D))
+        if (newDirection.X == 0 && newDirection.Y == 0)
         {
-            transform.position.X += transform.velocity;
+            transform.velocity -= transform.sluggishness;
+            if (transform.velocity < 0)
+            {
+                transform.velocity = 0;
+            }
         }
-        else if (Raylib.IsKeyDown(KeyboardKey.KEY_LEFT) || Raylib.IsKeyDown(KeyboardKey.KEY_A))
+        else
         {
-            transform.position.X -= transform.velocity;
+            transform.velocity += transform.acceleration;
+            if (transform.velocity > transform.maxVelocity)
+            {
+                transform.velocity = transform.maxVelocity;
+            }
+            if(newDirection.X > 0 && transform.direction.Y > 0 || newDirection.X < 0 && transform.direction.Y < 0 || newDirection.Y > 0 && transform.direction.X < 0 || newDirection.Y < 0 && transform.direction.X > 0)
+            {
+                newDirection /= 1.25f;
+            }
+            transform.direction = newDirection;
         }
+        transform.position += transform.direction * transform.velocity;
     }
 }
