@@ -30,7 +30,7 @@ class Player
     /// <param name="velocity">The velocity of the player.</param>
     public Player(Vector2 position, float maxVelocity)
     {
-        transform = new GameEngine6000.Transform(position, 0.0f, maxVelocity, 0.5f, 0.5f);
+        transform = new GameEngine6000.Transform(position, 0.0f, maxVelocity, .3f, 0.3f);
         sprite = new SpriteRenderer(
             position,
             new Vector2(50, 50),
@@ -125,8 +125,13 @@ class Player
             return;
         }
 
+        // Follow mouse
         Vector2 mousePosition = Raylib.GetMousePosition();
-        transform.position.X = mousePosition.X;
+        Vector2 direction = mousePosition;
+        direction = Vector2.Normalize(direction);
+        transform.direction = direction;
+        transform.position = mousePosition - sprite.size / 2;
+
     }
 
     /// <summary>
@@ -148,10 +153,13 @@ class Player
     public void KeyPressed()
     {
         Vector2 newDirection = ReadDirectionInput();
+
         if (!canMove)
         {
             return;
         }
+
+        // If the player is not moving, slow down
         if (newDirection.X == 0 && newDirection.Y == 0)
         {
             transform.velocity -= transform.sluggishness;
@@ -167,12 +175,23 @@ class Player
             {
                 transform.velocity = transform.maxVelocity;
             }
-            if(newDirection.X > 0 && transform.direction.Y > 0 || newDirection.X < 0 && transform.direction.Y < 0 || newDirection.Y > 0 && transform.direction.X < 0 || newDirection.Y < 0 && transform.direction.X > 0)
+            if (
+                newDirection.X > 0 && transform.direction.Y > 0
+                || newDirection.X < 0 && transform.direction.Y < 0
+                || newDirection.Y > 0 && transform.direction.X < 0
+                || newDirection.Y < 0 && transform.direction.X > 0
+            )
             {
-                newDirection /= 1.25f;
+                newDirection /= 1.5f;
             }
+            if (transform.direction != newDirection)
+            {
+                transform.velocity -= transform.sluggishness * 2;
+            }
+
             transform.direction = newDirection;
         }
-        transform.position += transform.direction * transform.velocity;
+        // Move the player
+        transform.position += transform.velocity * transform.direction;
     }
 }

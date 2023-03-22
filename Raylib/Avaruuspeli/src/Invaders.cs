@@ -16,6 +16,9 @@ class Invaders
     ///</summary>
     public void Run()
     {
+        int screenHeight = 900;
+        int screenWidth = 800;
+
         /* Creating a new instance of the Random class. */
         Random random = new Random();
 
@@ -25,18 +28,24 @@ class Invaders
         List<Bullet> enemyBullets = new List<Bullet>();
 
         /* Initializing the window and setting the FPS to 60. */
-        Raylib.InitWindow(800, 900, "Space Invaders");
+        Raylib.InitWindow(screenWidth, screenHeight, "Space Invaders");
         Raylib.SetTargetFPS(60);
         Raylib.InitAudioDevice();
 
         /* Creating a new instance of the Player class and the GameManager class. */
-        Player player = new Player(new Vector2(400, 830), 5.0f);
+        Player player = new Player(new Vector2(400, 830), 7.0f);
         GameManager gameManager = new GameManager();
 
         /* Variables for SFX */
         Sound shootSound;
         Sound explosionSound;
         Sound hitSound;
+
+        Camera2D camera;
+        camera.target = new(player.transform.position.X + 20, player.transform.position.Y + 20);
+        camera.offset = new(screenWidth / 2, screenHeight / 2);
+        camera.rotation = 0.0f;
+        camera.zoom = 1.0f;
 
         /* Variables for textures */
         Texture enemyTexture = Raylib.LoadTexture("./resources/textures/hjallis.png");
@@ -54,6 +63,10 @@ class Invaders
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Raylib.BLACK);
+            Raylib.BeginMode2D(camera);
+            camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
+            
+            
 
             /* Calling the method `PlayerShoot()` */
             PlayerShoot();
@@ -83,16 +96,19 @@ class Invaders
             /* Calling the method `EnemyShoot()`. */
             EnemyShoot();
 
+            /* Updating the player. */
+            player.Update();
+
+            Raylib.EndMode2D();
+
             /* It checks if the game is over. */
             CheckGameProgress();
 
             /* Updating the game manager. */
             gameManager.Update();
 
-            /* Updating the player. */
-            player.Update();
-
             Raylib.EndDrawing();
+            
         }
 
         ///<summary>
@@ -376,6 +392,8 @@ class Invaders
                 }
             }
         }
+
+        
 
         /// <summary>
         /// If there are no enemies, spawn them. If there are enemies, make them active
