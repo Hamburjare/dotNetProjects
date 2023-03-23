@@ -26,7 +26,7 @@ class SpriteRenderer
 
     /* Used to store the rectangle that is used to draw the texture. */
     Rectangle sourceRec;
-
+ 
     /// <summary>
     /// The constructor for the SpriteRenderer class.
     /// </summary>
@@ -65,7 +65,6 @@ class SpriteRenderer
         this.size = size;
         this.texture = texture;
         texturePath = "abaduu";
-
 
         /* Scaling the image to fit the rectangle. */
         ScaleImage();

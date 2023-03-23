@@ -42,7 +42,7 @@ class Invaders
         Sound hitSound;
 
         Camera2D camera;
-        camera.target = new(player.transform.position.X + 20, player.transform.position.Y + 20);
+        camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
         camera.offset = new(screenWidth / 2, screenHeight / 2);
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
@@ -65,8 +65,6 @@ class Invaders
             Raylib.ClearBackground(Raylib.BLACK);
             Raylib.BeginMode2D(camera);
             camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
-            
-            
 
             /* Calling the method `PlayerShoot()` */
             PlayerShoot();
@@ -80,6 +78,22 @@ class Invaders
             /* Moving the bullets up. Bullets are shooted by player*/
             foreach (Bullet bullet in bullets)
             {
+                if (!bullet.IsActive)
+                {
+                    continue;
+                }
+                Vector2 bulletPositionInScreen = Raylib.GetWorldToScreen2D(
+                    bullet.transform.position,
+                    camera
+                );
+
+                if (bulletPositionInScreen.Y < -1000 || bulletPositionInScreen.Y > screenHeight)
+                {
+                    bullet.SetActivityFalse();
+                    continue;
+                }
+
+                bullet.camera = camera;
                 bullet.transform.position.Y -= bullet.transform.velocity;
                 bullet.Update();
             }
@@ -87,6 +101,15 @@ class Invaders
             /* Updating the enemies. */
             foreach (Enemy enemy in enemies)
             {
+                Vector2 enemyPositionInScreen = Raylib.GetWorldToScreen2D(
+                    enemy.transform.position,
+                    camera
+                );
+
+                if (enemyPositionInScreen.Y < 0 || enemyPositionInScreen.Y > screenHeight)
+                {
+                    continue;
+                }
                 enemy.Update();
             }
 
@@ -108,7 +131,6 @@ class Invaders
             gameManager.Update();
 
             Raylib.EndDrawing();
-            
         }
 
         ///<summary>
@@ -181,11 +203,23 @@ class Invaders
             );
             if (player.GetKeyboardMovement())
             {
-                Raylib.DrawText("Want to change to keyboard control? Press 'I'", 40, 700, 30, Raylib.RED);
+                Raylib.DrawText(
+                    "Want to change to keyboard control? Press 'I'",
+                    40,
+                    700,
+                    30,
+                    Raylib.RED
+                );
             }
             else
             {
-                Raylib.DrawText("Want to change to mouse control? Press 'I'", 70, 700, 30, Raylib.RED);
+                Raylib.DrawText(
+                    "Want to change to mouse control? Press 'I'",
+                    70,
+                    700,
+                    30,
+                    Raylib.RED
+                );
             }
 
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
@@ -271,6 +305,20 @@ class Invaders
 
                 if (Raylib.GetRandomValue(0, 1001) < enemyShootMultiplier)
                 {
+                    Vector2 enemyPositionInScreen = Raylib.GetWorldToScreen2D(
+                        enemy.transform.position,
+                        camera
+                    );
+                    // If enemy is not in the screen, don't shoot
+                    if (
+                        enemyPositionInScreen.X < 0
+                        || enemyPositionInScreen.X > Raylib.GetScreenWidth()
+                        || enemyPositionInScreen.Y < 0
+                        || enemyPositionInScreen.Y > Raylib.GetScreenHeight()
+                    )
+                    {
+                        continue;
+                    }
                     Bullet bullet = new Bullet();
                     Vector2 bulletPosition = new Vector2(
                         enemy.transform.position.X + enemy.sprite.size.X / 2,
@@ -284,6 +332,8 @@ class Invaders
             /* Looping through the enemyBullets array and updating each bullet. */
             foreach (Bullet bullet in enemyBullets)
             {
+                bullet.camera = camera;
+
                 bullet.transform.position.Y += bullet.transform.velocity;
                 bullet.Update();
             }
@@ -305,7 +355,7 @@ class Invaders
                 }
                 foreach (Bullet bullet in bullets)
                 {
-                    if (!bullet.IsActive())
+                    if (!bullet.IsActive)
                     {
                         continue;
                     }
@@ -334,7 +384,7 @@ class Invaders
             // Enemy shooted bullets
             foreach (Bullet bullet in enemyBullets)
             {
-                if (!bullet.IsActive())
+                if (!bullet.IsActive)
                 {
                     continue;
                 }
@@ -393,8 +443,6 @@ class Invaders
             }
         }
 
-        
-
         /// <summary>
         /// If there are no enemies, spawn them. If there are enemies, make them active
         /// </summary>
@@ -409,6 +457,7 @@ class Invaders
                         Enemy enemy = new Enemy(enemyTexture);
                         enemy.SetActive(new Vector2(40 + j * 75, 130 + i * 75), 1.0f);
                         enemies.Add(enemy);
+                        enemy.Update();
                     }
                 }
             }

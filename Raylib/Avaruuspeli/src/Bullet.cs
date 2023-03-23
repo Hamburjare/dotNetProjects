@@ -14,11 +14,16 @@ class Bullet
     /* A boolean variable that is used to check if the bullet is active or not. */
     bool isActive = false;
 
+    public bool IsActive { get => isActive; }
+
     /* Creating a new instance of the Transform class. */
     public GameEngine6000.Transform transform;
 
     /* Creating a new instance of the SpriteRenderer class. */
     public SpriteRenderer sprite;
+
+    /* Variable for camera */
+    public Camera2D camera;
 
     /// <summary>
     /// The constructor for the Bullet class.
@@ -45,11 +50,13 @@ class Bullet
             return;
         }
 
-        // If bullet goes off screen, set it to inactive
-        if (transform.position.Y < 0 || transform.position.Y > Raylib.GetScreenHeight())
+        Vector2 bulletPositionInScreen = Raylib.GetWorldToScreen2D(transform.position, camera);
+
+        // If bullet goes off screen from below, set it to inactive
+        if(bulletPositionInScreen.Y > Raylib.GetScreenHeight())
         {
             isActive = false;
-        }
+        }        
 
         // Draw bullet
         sprite.position = transform.position;
@@ -64,13 +71,6 @@ class Bullet
         isActive = false;
     }
 
-    /// <summary>
-    /// Returns the activity of the bullet.
-    /// </summary>
-    public bool IsActive()
-    {
-        return isActive;
-    }
 
     /// <summary>
     /// Method <c>SetActive</c> is used to set the bullet to active.

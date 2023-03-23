@@ -36,6 +36,20 @@ class Enemy
             texture
         );
     }
+    /// <summary>
+    /// The constructor for the Enemy class.
+    /// </summary>
+    public Enemy(string texture)
+    {
+        transform = new GameEngine6000.Transform(new Vector2(0, 0), 5.0f);
+
+        sprite = new SpriteRenderer(
+            new Vector2(815, 290),
+            new Vector2(50, 50),
+            Raylib.WHITE,
+            texture
+        );
+    }
 
     /// <summary>
     /// Method <c>Update</c> is used to update the enemy.

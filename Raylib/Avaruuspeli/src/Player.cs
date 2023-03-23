@@ -22,6 +22,7 @@ class Player
 
     //If true player uses keyboard if false player uses mouse
     bool keyboardMovement = true;
+    
 
     /// <summary>
     /// The constructor for the Player class.
