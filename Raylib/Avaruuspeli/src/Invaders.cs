@@ -78,7 +78,7 @@ class Invaders
             /* Moving the bullets up. Bullets are shooted by player*/
             foreach (Bullet bullet in bullets)
             {
-                if (!bullet.IsActive)
+                if (!bullet.isActive)
                 {
                     continue;
                 }
@@ -89,7 +89,7 @@ class Invaders
 
                 if (bulletPositionInScreen.Y < -1000 || bulletPositionInScreen.Y > screenHeight)
                 {
-                    bullet.SetActivityFalse();
+                    bullet.isActive = false;
                     continue;
                 }
 
@@ -143,12 +143,12 @@ class Invaders
 
         void CheckGameProgress()
         {
-            if (gameManager.GetHealth() <= 0)
+            if (gameManager.Health <= 0)
             {
-                if (!gameManager.IsGameOver())
+                if (!gameManager.IsGameOver)
                 {
                     Raylib.PlaySound(explosionSound);
-                    gameManager.SetTime(Raylib.GetTime());
+                    gameManager.Time = Raylib.GetTime();
                 }
 
                 GameOver();
@@ -158,7 +158,7 @@ class Invaders
             bool allEnemiesDead = true;
             foreach (Enemy enemy in enemies)
             {
-                if (enemy.IsActive())
+                if (enemy.isActive)
                 {
                     allEnemiesDead = false;
                 }
@@ -166,7 +166,7 @@ class Invaders
 
             if (allEnemiesDead)
             {
-                if (!gameManager.IsGameOver())
+                if (!gameManager.IsGameOver)
                 {
                     SpawnEnemies();
                 }
@@ -185,23 +185,12 @@ class Invaders
         {
             foreach (Enemy enemy in enemies)
             {
-                enemy.SetCanMove(false);
+                enemy.canMove = false;
             }
-            gameManager.SetGameOver(true);
-            player.SetCanMove(false);
+            gameManager.GameOver();
+            player.canMove = false;
 
-            Raylib.DrawText("Game Over!", 300, 400, 50, Raylib.RED);
-            Raylib.DrawText("Press Enter to restart", 250, 500, 30, Raylib.RED);
-            Raylib.DrawText("Your score was: " + gameManager.GetScore(), 250, 550, 30, Raylib.RED);
-            Raylib.DrawText("Your time was: " + gameManager.GetTime(), 250, 600, 30, Raylib.RED);
-            Raylib.DrawText(
-                "You killed " + gameManager.GetEnemyCount() + " enemies",
-                250,
-                650,
-                30,
-                Raylib.RED
-            );
-            if (player.GetKeyboardMovement())
+            if (player.KeyboardMovement)
             {
                 Raylib.DrawText(
                     "Want to change to keyboard control? Press 'I'",
@@ -238,11 +227,11 @@ class Invaders
 
             foreach (Enemy enemy in enemies)
             {
-                enemy.SetCanMove(true);
-                enemy.SetActivityTrue();
+                enemy.canMove = true;
+                enemy.isActive = true;
             }
 
-            player.SetCanMove(true);
+            player.canMove = true;
             gameManager.Reset();
             SpawnEnemies();
         }
@@ -256,13 +245,13 @@ class Invaders
             if (
                 Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE)
                     && playerShootCooldown <= 0
-                    && player.GetKeyboardMovement()
+                    && player.KeyboardMovement
                 || Raylib.IsMouseButtonPressed(0)
                     && playerShootCooldown <= 0
-                    && !player.GetKeyboardMovement()
+                    && !player.KeyboardMovement
             )
             {
-                if (gameManager.IsGameOver())
+                if (gameManager.IsGameOver)
                 {
                     return;
                 }
@@ -291,14 +280,14 @@ class Invaders
         /// </summary>
         void EnemyShoot()
         {
-            if (gameManager.IsGameOver())
+            if (gameManager.IsGameOver)
             {
                 return;
             }
 
             foreach (Enemy enemy in enemies)
             {
-                if (!enemy.IsActive())
+                if (!enemy.isActive)
                 {
                     continue;
                 }
@@ -349,13 +338,13 @@ class Invaders
             Collision collision = new Collision();
             foreach (Enemy enemy in enemies)
             {
-                if (!enemy.IsActive())
+                if (!enemy.isActive)
                 {
                     continue;
                 }
                 foreach (Bullet bullet in bullets)
                 {
-                    if (!bullet.IsActive)
+                    if (!bullet.isActive)
                     {
                         continue;
                     }
@@ -366,11 +355,11 @@ class Invaders
                         )
                     )
                     {
-                        enemy.SetActivityFalse();
-                        bullet.SetActivityFalse();
-                        gameManager.AddScore(10);
-                        gameManager.AddEnemyCount(1);
-                        gameManager.AddScoreMultiplier((float)random.NextDouble());
+                        enemy.isActive = false;
+                        bullet.isActive = false;
+                        gameManager.Score += (int)(gameManager.ScoreMultiplier * 10);
+                        gameManager.EnemyCount += 1;
+                        gameManager.ScoreMultiplier += (float)random.NextDouble();
                         Raylib.PlaySound(hitSound);
 
                         if (Raylib.GetRandomValue(0, 500) < 1)
@@ -384,7 +373,7 @@ class Invaders
             // Enemy shooted bullets
             foreach (Bullet bullet in enemyBullets)
             {
-                if (!bullet.IsActive)
+                if (!bullet.isActive)
                 {
                     continue;
                 }
@@ -395,8 +384,8 @@ class Invaders
                     )
                 )
                 {
-                    gameManager.RemoveHealth(1);
-                    bullet.SetActivityFalse();
+                    gameManager.Health -= 1;
+                    bullet.isActive = false;
                     Raylib.PlaySound(hitSound);
                 }
             }
@@ -404,13 +393,13 @@ class Invaders
             // enemies colliding with each other
             foreach (Enemy enemy in enemies)
             {
-                if (!enemy.IsActive())
+                if (!enemy.isActive)
                 {
                     continue;
                 }
                 foreach (Enemy enemy2 in enemies)
                 {
-                    if (!enemy2.IsActive())
+                    if (!enemy2.isActive)
                     {
                         continue;
                     }
@@ -465,7 +454,7 @@ class Invaders
             {
                 foreach (Enemy enemy in enemies)
                 {
-                    enemy.SetActivityTrue();
+                    enemy.isActive = true;
                 }
             }
         }

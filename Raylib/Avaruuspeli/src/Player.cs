@@ -18,10 +18,12 @@ class Player
     public SpriteRenderer sprite;
 
     /* A boolean variable that is used to check if the player can move or not. */
-    bool canMove = true;
+    public bool canMove = true;
 
     //If true player uses keyboard if false player uses mouse
     bool keyboardMovement = true;
+
+    public bool KeyboardMovement { get => keyboardMovement;}
     
 
     /// <summary>
@@ -40,14 +42,6 @@ class Player
         );
     }
 
-    /// <summary>
-    /// Sets whether or not the player can move.
-    /// </summary>
-    /// <param name="canMove">Whether or not the player can move.</param>
-    public void SetCanMove(bool canMove)
-    {
-        this.canMove = canMove;
-    }
 
     public Vector2 ReadDirectionInput()
     {
@@ -133,14 +127,6 @@ class Player
         transform.direction = direction;
         transform.position = mousePosition - sprite.size / 2;
 
-    }
-
-    /// <summary>
-    /// Gets whether player uses keyboard or mouse for movement
-    /// </summary>
-    public bool GetKeyboardMovement()
-    {
-        return keyboardMovement;
     }
 
     /// <summary>

@@ -12,9 +12,10 @@ class Enemy
 {
     /* A variable that is used to check if the enemy is active or not. */
     public bool isActive = false;
+    
 
     /* Used to check if the enemy can move or not. */
-    bool canMove = true;
+    public bool canMove = true;
 
     /* Creating a new instance of the Transform class. */
     public GameEngine6000.Transform transform;
@@ -75,38 +76,6 @@ class Enemy
         MoveEnemy();
     }
 
-    /// <summary>
-    /// It sets the activity to false.
-    /// </summary>
-    public void SetActivityFalse()
-    {
-        isActive = false;
-    }
-
-    /// <summary>
-    /// Sets the activity to true.
-    /// </summary>
-    public void SetActivityTrue()
-    {
-        isActive = true;
-    }
-
-    /// <summary>
-    /// Returns the isActive variable.
-    /// </summary>
-    public bool IsActive()
-    {
-        return isActive;
-    }
-
-    /// <summary>
-    /// Sets the canMove variable.
-    /// </summary>
-    /// <param name="canMove">Whether or not the player can move.</param>
-    public void SetCanMove(bool canMove)
-    {
-        this.canMove = canMove;
-    }
 
     /// <summary>
     /// Sets the enemy active.

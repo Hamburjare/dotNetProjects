@@ -12,9 +12,7 @@ namespace Avaruuspeli;
 class Bullet
 {
     /* A boolean variable that is used to check if the bullet is active or not. */
-    bool isActive = false;
-
-    public bool IsActive { get => isActive; }
+    public bool isActive = false;
 
     /* Creating a new instance of the Transform class. */
     public GameEngine6000.Transform transform;
@@ -61,14 +59,6 @@ class Bullet
         // Draw bullet
         sprite.position = transform.position;
         sprite.Draw();
-    }
-
-    /// <summary>
-    /// It sets the activity to false.
-    /// </summary>
-    public void SetActivityFalse()
-    {
-        isActive = false;
     }
 
 
