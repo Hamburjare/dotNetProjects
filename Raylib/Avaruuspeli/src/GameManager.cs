@@ -15,7 +15,6 @@ using Avaruuspeli;
 
 class GameManager
 {
-    /* Setting the variable isGameOver to false. */
     bool isGameOver = false;
 
     public bool IsGameOver
