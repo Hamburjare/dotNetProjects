@@ -9,7 +9,7 @@ namespace Avaruuspeli;
 /// Class <c>Bullet</c> is used to create bullets for the game.
 /// </summary>
 
-class Bullet
+class Bullet : IBehaviour
 {
     /* A boolean variable that is used to check if the bullet is active or not. */
     public bool isActive = false;
@@ -51,16 +51,15 @@ class Bullet
         Vector2 bulletPositionInScreen = Raylib.GetWorldToScreen2D(transform.position, camera);
 
         // If bullet goes off screen from below, set it to inactive
-        if(bulletPositionInScreen.Y > Raylib.GetScreenHeight())
+        if (bulletPositionInScreen.Y > Raylib.GetScreenHeight())
         {
             isActive = false;
-        }        
+        }
 
         // Draw bullet
         sprite.position = transform.position;
         sprite.Draw();
     }
-
 
     /// <summary>
     /// Method <c>SetActive</c> is used to set the bullet to active.

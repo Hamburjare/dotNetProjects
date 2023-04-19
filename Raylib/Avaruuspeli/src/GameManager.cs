@@ -1,3 +1,4 @@
+namespace GameEngine6000;
 using System;
 using System.Numerics;
 using Raylib_CsLo;
@@ -13,7 +14,7 @@ using Avaruuspeli;
 /// </remarks>
 
 
-class GameManager
+class GameManager : IBehaviour
 {
     bool isGameOver = false;
 

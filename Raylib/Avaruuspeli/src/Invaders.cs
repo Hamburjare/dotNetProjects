@@ -19,6 +19,18 @@ class Invaders
         int screenHeight = 900;
         int screenWidth = 800;
 
+        Vector2 mapTileSize = new(16, 16);
+        Vector2 playerTileSize = new(32, 32);
+        Vector2 enemyTileSize = new(32, 32);
+
+        string mapPath = "./Tiled/map.csv";
+
+        string tileTexturePath = "./Tiled/tiles/";
+
+        string playerTexturePath = "./Tiled/ships/ship_0001.png";
+
+        string enemyTexturePath = "./Tiled/ships/ship_0014.png";
+
         /* Creating a new instance of the Random class. */
         Random random = new Random();
 
@@ -32,8 +44,13 @@ class Invaders
         Raylib.SetTargetFPS(60);
         Raylib.InitAudioDevice();
 
+        /* Variables for textures */
+        Texture enemyTexture = Raylib.LoadTexture(enemyTexturePath);
+        Texture playerTexture = Raylib.LoadTexture(playerTexturePath);
+        List<Texture> tileTextures = new List<Texture>();
+
         /* Creating a new instance of the Player class and the GameManager class. */
-        Player player = new Player(new Vector2(400, 830), 7.0f);
+        Player player = new Player(new Vector2(400, 830), 7.0f, playerTexture, playerTileSize);
         GameManager gameManager = new GameManager();
 
         /* Variables for SFX */
@@ -47,8 +64,14 @@ class Invaders
         camera.rotation = 0.0f;
         camera.zoom = 1.0f;
 
-        /* Variables for textures */
-        Texture enemyTexture = Raylib.LoadTexture("./resources/textures/hjallis.png");
+        /* Loading the textures for the tiles. */
+        var tileTextureFiles = Directory.GetFiles(tileTexturePath, "*.png");
+        foreach (var tileTextureFile in tileTextureFiles)
+        {
+            tileTextures.Add(Raylib.LoadTexture(tileTextureFile));
+        }
+
+        Map map = new Map(mapPath, mapTileSize, tileTextures);
 
         /* A variable that is used to make the player shoot only once every 0.75 seconds. */
         float playerShootCooldown = 0.0f;
@@ -65,6 +88,19 @@ class Invaders
             Raylib.ClearBackground(Raylib.BLACK);
             Raylib.BeginMode2D(camera);
             camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
+
+            /* Calling the method `Draw()` from the class `Map` */
+            map.Draw();
+
+            // Making sure that camera sides is not too high or too low
+            if (camera.target.Y < screenHeight / 2)
+            {
+                camera.target.Y = screenHeight / 2;
+            }
+            else if (camera.target.Y > map.Y - screenHeight / 2 + playerTileSize.Y / 2)
+            {
+                camera.target.Y = map.Y - screenHeight / 2 + playerTileSize.Y / 2;
+            }
 
             /* Calling the method `PlayerShoot()` */
             PlayerShoot();
@@ -121,6 +157,13 @@ class Invaders
 
             /* Updating the player. */
             player.Update();
+
+            // Prevert player from going off camera
+            player.transform.position.Y = Math.Clamp(
+                player.transform.position.Y,
+                0,
+                map.Y - playerTileSize.Y / 2
+            );
 
             Raylib.EndMode2D();
 
@@ -443,7 +486,7 @@ class Invaders
                 {
                     for (int j = 0; j < 10; j++)
                     {
-                        Enemy enemy = new Enemy(enemyTexture);
+                        Enemy enemy = new Enemy(enemyTexture, enemyTileSize);
                         enemy.SetActive(new Vector2(40 + j * 75, 130 + i * 75), 1.0f);
                         enemies.Add(enemy);
                         enemy.Update();

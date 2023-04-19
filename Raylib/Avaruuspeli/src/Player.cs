@@ -9,7 +9,7 @@ namespace Avaruuspeli;
 /// Class <c>Player</c> is used to create the player for the game.
 /// </summary>
 
-class Player
+class Player : IBehaviour
 {
     /* Creating a new instance of the Transform class. */
     public GameEngine6000.Transform transform;
@@ -31,14 +31,14 @@ class Player
     /// </summary>
     /// <param name="position">The position of the player.</param>
     /// <param name="velocity">The velocity of the player.</param>
-    public Player(Vector2 position, float maxVelocity)
+    public Player(Vector2 position, float maxVelocity, Texture texture, Vector2 size)
     {
         transform = new GameEngine6000.Transform(position, 0.0f, maxVelocity, .3f, 0.3f);
         sprite = new SpriteRenderer(
-            position,
-            new Vector2(50, 50),
+            new Vector2(0,0),
+            size,
             Raylib.WHITE,
-            "./resources/textures/widepasi.png"
+            texture
         );
     }
 
@@ -104,6 +104,7 @@ class Player
             0,
             Raylib.GetScreenWidth() - sprite.size.X
         );
+
     }
 
     /// <summary>

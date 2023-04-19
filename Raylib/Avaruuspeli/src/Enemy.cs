@@ -8,11 +8,10 @@ namespace Avaruuspeli;
 /// <summary>
 /// Class <c>Enemy</c> is used to create enemies for the game.
 /// </summary>
-class Enemy
+class Enemy : IBehaviour
 {
     /* A variable that is used to check if the enemy is active or not. */
     public bool isActive = false;
-    
 
     /* Used to check if the enemy can move or not. */
     public bool canMove = true;
@@ -26,17 +25,13 @@ class Enemy
     /// <summary>
     /// The constructor for the Enemy class.
     /// </summary>
-    public Enemy(Texture texture)
+    public Enemy(Texture texture, Vector2 size)
     {
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 5.0f);
 
-        sprite = new SpriteRenderer(
-            new Vector2(815, 290),
-            new Vector2(50, 50),
-            Raylib.WHITE,
-            texture
-        );
+        sprite = new SpriteRenderer(new Vector2(0, 0), size, Raylib.WHITE, texture);
     }
+
     /// <summary>
     /// The constructor for the Enemy class.
     /// </summary>
@@ -75,7 +70,6 @@ class Enemy
         // Move enemy
         MoveEnemy();
     }
-
 
     /// <summary>
     /// Sets the enemy active.
