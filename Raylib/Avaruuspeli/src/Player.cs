@@ -98,13 +98,6 @@ class Player : IBehaviour
         sprite.position = transform.position;
         sprite.Draw();
 
-        // Prevert player from going off screen
-        transform.position.X = Math.Clamp(
-            transform.position.X,
-            0,
-            Raylib.GetScreenWidth() - sprite.size.X
-        );
-
     }
 
     /// <summary>
@@ -170,7 +163,7 @@ class Player : IBehaviour
                 || newDirection.Y < 0 && transform.direction.X > 0
             )
             {
-                newDirection /= 1.5f;
+                newDirection /= 1.25f;
             }
             if (transform.direction != newDirection)
             {

@@ -50,7 +50,7 @@ class Invaders
         List<Texture> tileTextures = new List<Texture>();
 
         /* Creating a new instance of the Player class and the GameManager class. */
-        Player player = new Player(new Vector2(400, 4700), 7.0f, playerTexture, playerTileSize);
+        Player player = new Player(new Vector2(400, 4700), 4.0f, playerTexture, playerTileSize);
         GameManager gameManager = new GameManager();
 
         /* Variables for SFX */
@@ -126,7 +126,7 @@ class Invaders
                     camera
                 );
 
-                if (bulletPositionInScreen.Y < -1000 || bulletPositionInScreen.Y > screenHeight)
+                if (bulletPositionInScreen.Y < 0 || bulletPositionInScreen.Y > screenHeight)
                 {
                     bullet.isActive = false;
                     continue;
@@ -145,6 +145,17 @@ class Invaders
                     camera
                 );
 
+                // If enemy touches the top or bottom of the screen, change direction
+                if (enemy.transform.position.Y > map.MapSize.Y - enemyTileSize.Y)
+                {
+                    enemy.moveDirection.Y = -1;
+                }
+                else if (enemy.transform.position.Y < 1)
+                {
+                    enemy.moveDirection.Y = 1;
+                }
+
+                // If enemy is not on screen, skip it
                 if (enemyPositionInScreen.Y < 0 || enemyPositionInScreen.Y > screenHeight)
                 {
                     continue;
@@ -160,13 +171,7 @@ class Invaders
 
             /* Updating the player. */
             player.Update();
-
-            // Prevert player from going off camera
-            player.transform.position.Y = Math.Clamp(
-                player.transform.position.Y,
-                0,
-                map.MapSize.Y - playerTileSize.Y
-            );
+            PrevertPlayerFromGoingOffScreen();
 
             Raylib.EndMode2D();
 
@@ -177,6 +182,21 @@ class Invaders
             gameManager.Update();
 
             Raylib.EndDrawing();
+        }
+
+        void PrevertPlayerFromGoingOffScreen()
+        {
+            // Prevert player from going off camera
+            player.transform.position.Y = Math.Clamp(
+                player.transform.position.Y,
+                0,
+                map.MapSize.Y - playerTileSize.Y
+            );
+            player.transform.position.X = Math.Clamp(
+                player.transform.position.X,
+                0,
+                Raylib.GetScreenWidth() - player.sprite.size.X
+            );
         }
 
         ///<summary>
@@ -302,7 +322,7 @@ class Invaders
                     return;
                 }
 
-                Bullet bullet = new Bullet();
+                Bullet bullet = new Bullet(mapTileSize, tileTextures[12]);
                 Vector2 bulletPosition = new Vector2(
                     player.transform.position.X + player.sprite.size.X / 2,
                     player.transform.position.Y
@@ -338,7 +358,7 @@ class Invaders
                     continue;
                 }
 
-                if (Raylib.GetRandomValue(0, 1001) < enemyShootMultiplier)
+                if (Raylib.GetRandomValue(0, 100) < enemyShootMultiplier)
                 {
                     Vector2 enemyPositionInScreen = Raylib.GetWorldToScreen2D(
                         enemy.transform.position,
@@ -354,7 +374,7 @@ class Invaders
                     {
                         continue;
                     }
-                    Bullet bullet = new Bullet();
+                    Bullet bullet = new Bullet(mapTileSize, tileTextures[15]);
                     Vector2 bulletPosition = new Vector2(
                         enemy.transform.position.X + enemy.sprite.size.X / 2,
                         enemy.transform.position.Y
@@ -465,13 +485,13 @@ class Invaders
                         // if enemy is on the left side of enemy2
                         if (enemy.transform.position.X < enemy2.transform.position.X)
                         {
-                            enemy.transform.position.X -= 1;
-                            enemy2.transform.position.X += 1;
+                            enemy.moveDirection.X = -1;
+                            enemy2.moveDirection.X = 1;
                         }
                         else
                         {
-                            enemy.transform.position.X += 1;
-                            enemy2.transform.position.X -= 1;
+                            enemy.moveDirection.X = 1;
+                            enemy2.moveDirection.X = 1;
                         }
                     }
                 }
@@ -485,7 +505,6 @@ class Invaders
         {
             if (enemies.Count == 0)
             {
-                // Spawn enemies in the random position on the map max height = map.y
                 for (int i = 0; i < gameManager.MaxEnemies; i++)
                 {
                     Enemy enemy = new Enemy(enemyTexture, enemyTileSize);

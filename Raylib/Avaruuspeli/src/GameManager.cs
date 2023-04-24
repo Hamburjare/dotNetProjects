@@ -44,7 +44,7 @@ class GameManager : IBehaviour
         set => score = value;
     }
 
-    int maxEnemies = 20;
+    int maxEnemies = 35;
 
     public int MaxEnemies
     {

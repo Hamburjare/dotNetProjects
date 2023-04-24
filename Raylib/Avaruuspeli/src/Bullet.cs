@@ -26,10 +26,10 @@ class Bullet : IBehaviour
     /// <summary>
     /// The constructor for the Bullet class.
     /// </summary>
-    public Bullet()
+    public Bullet(Vector2 size, Texture texture)
     {
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 0);
-        sprite = new SpriteRenderer(new Vector2(0, 0), new Vector2(10, 10), Raylib.WHITE);
+        sprite = new SpriteRenderer(new Vector2(0, 0), size, Raylib.WHITE, texture);
     }
 
     /// <summary>

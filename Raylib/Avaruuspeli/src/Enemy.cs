@@ -8,10 +8,7 @@ namespace Avaruuspeli;
 enum MoveStyle
 {
     Random,
-    Stationary,
-    ZigZag,
-    Circle,
-    None
+    Stationary
 }
 
 /// <summary>
@@ -31,7 +28,9 @@ class Enemy : IBehaviour
     /* Creating a new instance of the SpriteRenderer class. */
     public SpriteRenderer sprite;
 
-    public MoveStyle moveStyle = MoveStyle.None;
+    public MoveStyle moveStyle = MoveStyle.Random;
+
+    public Vector2 moveDirection = Vector2.Zero;
 
     /// <summary>
     /// The constructor for the Enemy class.
@@ -45,6 +44,8 @@ class Enemy : IBehaviour
         Random random = new Random();
         moveStyle = (MoveStyle)random.Next(0, Enum.GetNames(typeof(MoveStyle)).Length);
 
+        moveDirection.X = random.Next(0, 2) * 2 - 1;
+        moveDirection.Y = 1;
     }
 
     /// <summary>
@@ -98,6 +99,8 @@ class Enemy : IBehaviour
         transform.velocity = start_velocity;
     }
 
+    
+
     /// <summary>
     /// Method <c>MoveEnemy</c> is used to move the enemy.
     /// </summary>
@@ -121,14 +124,6 @@ class Enemy : IBehaviour
             case MoveStyle.Stationary:
                 MoveStationary();
                 break;
-            case MoveStyle.ZigZag:
-                MoveZigZag();
-                break;
-            // case MoveStyle.Circle:
-            //     MoveCircle();
-            //     break;
-            // case MoveStyle.None:
-            //     break;
             default:
                 break;
         }
@@ -138,44 +133,21 @@ class Enemy : IBehaviour
     
     void MoveRandom()
     {
-        // Move enemy randomly left or right and dont change direction until enemy is outside of the screen
-        if (transform.position.X <= 0)
+        // Move enemy randomly left or right and dont change direction until enemy is outside of the screen use moveDirection
+        transform.position.X += transform.velocity * moveDirection.X;
+        
+        // If enemy is outside of the screen, change direction
+        if (transform.position.X < 0 || transform.position.X > Raylib.GetScreenWidth() - sprite.size.X)
         {
-            transform.velocity = Math.Abs(transform.velocity);
+            moveDirection.X *= -1;
         }
-        else if (transform.position.X >= Raylib.GetScreenWidth() - sprite.size.X)
-        {
-            transform.velocity = -Math.Abs(transform.velocity);
-        }
-
-        transform.position.X += transform.velocity;
-
-        // Prevent enemy from going outside of the screen
-        transform.position.X = Math.Clamp(transform.position.X, 0, Raylib.GetScreenWidth() - sprite.size.X);
+        
     }
 
     // Move stationary
     void MoveStationary()
     {
-        // Do nothing
+        transform.position.Y += transform.velocity * moveDirection.Y;
     }
 
-    // Move zig zag
-    void MoveZigZag()
-    {
-        // Move enemy left and right
-        if (transform.position.X <= 0)
-        {
-            transform.velocity = Math.Abs(transform.velocity);
-        }
-        else if (transform.position.X >= Raylib.GetScreenWidth() - sprite.size.X)
-        {
-            transform.velocity = -Math.Abs(transform.velocity);
-        }
-
-        transform.position.X += transform.velocity;
-
-        // Prevent enemy from going outside of the screen
-        transform.position.X = Math.Clamp(transform.position.X, 0, Raylib.GetScreenWidth() - sprite.size.X);
-    }
 }
