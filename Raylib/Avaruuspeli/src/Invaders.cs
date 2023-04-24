@@ -23,13 +23,13 @@ class Invaders
         Vector2 playerTileSize = new(32, 32);
         Vector2 enemyTileSize = new(32, 32);
 
-        string mapPath = "./Tiled/map.csv";
+        string mapPath = @"./Tiled/map.csv";
 
-        string tileTexturePath = "./Tiled/tiles/";
+        string tileTexturePath = @"./Tiled/tiles/";
 
-        string playerTexturePath = "./Tiled/ships/ship_0001.png";
+        string playerTexturePath = @"./Tiled/ships/ship_0001.png";
 
-        string enemyTexturePath = "./Tiled/ships/ship_0014.png";
+        string enemyTexturePath = @"./Tiled/ships/ship_0014.png";
 
         /* Creating a new instance of the Random class. */
         Random random = new Random();
@@ -50,7 +50,7 @@ class Invaders
         List<Texture> tileTextures = new List<Texture>();
 
         /* Creating a new instance of the Player class and the GameManager class. */
-        Player player = new Player(new Vector2(400, 830), 7.0f, playerTexture, playerTileSize);
+        Player player = new Player(new Vector2(400, 4700), 7.0f, playerTexture, playerTileSize);
         GameManager gameManager = new GameManager();
 
         /* Variables for SFX */
@@ -78,6 +78,9 @@ class Invaders
 
         int enemyShootMultiplier = 1;
 
+        /* Calling the method `Draw()` from the class `Map` */
+        map.Draw();
+
         /* Calling the methods `SpawnEnemies()` and `LoadSounds()` */
         SpawnEnemies();
         LoadSounds();
@@ -97,9 +100,9 @@ class Invaders
             {
                 camera.target.Y = screenHeight / 2;
             }
-            else if (camera.target.Y > map.Y - screenHeight / 2 + playerTileSize.Y / 2)
+            else if (camera.target.Y > map.MapSize.Y - screenHeight / 2)
             {
-                camera.target.Y = map.Y - screenHeight / 2 + playerTileSize.Y / 2;
+                camera.target.Y = map.MapSize.Y - screenHeight / 2;
             }
 
             /* Calling the method `PlayerShoot()` */
@@ -162,7 +165,7 @@ class Invaders
             player.transform.position.Y = Math.Clamp(
                 player.transform.position.Y,
                 0,
-                map.Y - playerTileSize.Y / 2
+                map.MapSize.Y - playerTileSize.Y
             );
 
             Raylib.EndMode2D();
@@ -401,7 +404,7 @@ class Invaders
                         enemy.isActive = false;
                         bullet.isActive = false;
                         gameManager.Score += (int)(gameManager.ScoreMultiplier * 10);
-                        gameManager.EnemyCount += 1;
+                        gameManager.EnemiesDestroyed += 1;
                         gameManager.ScoreMultiplier += (float)random.NextDouble();
                         Raylib.PlaySound(hitSound);
 
@@ -482,15 +485,19 @@ class Invaders
         {
             if (enemies.Count == 0)
             {
-                for (int i = 0; i < 5; i++)
+                // Spawn enemies in the random position on the map max height = map.y
+                for (int i = 0; i < gameManager.MaxEnemies; i++)
                 {
-                    for (int j = 0; j < 10; j++)
-                    {
-                        Enemy enemy = new Enemy(enemyTexture, enemyTileSize);
-                        enemy.SetActive(new Vector2(40 + j * 75, 130 + i * 75), 1.0f);
-                        enemies.Add(enemy);
-                        enemy.Update();
-                    }
+                    Enemy enemy = new Enemy(enemyTexture, enemyTileSize);
+                    enemy.SetActive(
+                        new Vector2(
+                            Raylib.GetRandomValue(0, (int)map.MapSize.X - (int)enemyTileSize.X),
+                            Raylib.GetRandomValue(0, (int)map.MapSize.Y - 250)
+                        ),
+                        1.0f
+                    );
+                    enemies.Add(enemy);
+                    enemy.Update();
                 }
             }
             else

@@ -44,13 +44,20 @@ class GameManager : IBehaviour
         set => score = value;
     }
 
-    /* Setting the enemy count to 0. */
-    int enemyCount = 0;
+    int maxEnemies = 20;
 
-    public int EnemyCount
+    public int MaxEnemies
     {
-        get => enemyCount;
-        set => enemyCount = value;
+        get => maxEnemies;
+    }
+
+    /* Setting the enemy count to 0. */
+    int enemiesDestroyed = 0;
+
+    public int EnemiesDestroyed
+    {
+        get => enemiesDestroyed;
+        set => enemiesDestroyed = value;
     }
 
     /* Setting the time to 0. */
@@ -107,6 +114,6 @@ class GameManager : IBehaviour
         Raylib.DrawText("Press Enter to restart", 250, 500, 30, Raylib.RED);
         Raylib.DrawText("Your score was: " + score, 250, 550, 30, Raylib.RED);
         Raylib.DrawText("Your time was: " + time, 250, 600, 30, Raylib.RED);
-        Raylib.DrawText("You killed " + enemyCount + " enemies", 250, 650, 30, Raylib.RED);
+        Raylib.DrawText("You killed " + enemiesDestroyed + " enemies", 250, 650, 30, Raylib.RED);
     }
 }

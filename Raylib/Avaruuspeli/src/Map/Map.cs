@@ -8,21 +8,17 @@ namespace GameEngine6000;
 
 public class Map
 {
-    List<Tile> tiles = new List<Tile>();
-
-    public List<Tile> Tiles
-    {
-        get { return tiles; }
-    }
+    List<Tile> tiles = new();
 
     Vector2 tileSize;
 
-    float y = 0;
+    Vector2 mapSize;
 
-    public float Y
+    public Vector2 MapSize
     {
-        get { return y; }
+        get { return mapSize; }
     }
+
 
     // csv file has a unknow number of rows and columns,
     // so we need to read it line by line
@@ -32,25 +28,22 @@ public class Map
     public Map(string mapFile, Vector2 size, List<Texture> tileset)
     {
         tileSize = size;
-        StartReading(mapFile, tileset);
+        tiles = ReadCSVFile(mapFile, tileset);
     }
 
-    async Task StartReading(string mapFile, List<Texture> tileset)
+    List<Tile> ReadCSVFile(string mapFile, List<Texture> tileset)
     {
-        await Task.Run(() => ReadCSVFile(mapFile, tileset));
-    }
+        List<Tile> tilesList = new();
 
-    string[][] m_Data;
+        string[][] m_Data;
 
-    public async void ReadCSVFile(string mapFile, List<Texture> tileset)
-    {
         // csv file has a unknow number of rows and columns,
         // so we need to read it line by line
         // each index in the line is a tile index in tileset
         // width and height of the map is the number of rows and columns
 
         // read the file
-        string[] lines = await File.ReadAllLinesAsync(mapFile);
+        string[] lines = File.ReadAllLines(mapFile);
 
         // create a jagged array to store the data
         m_Data = new string[lines.Length][];
@@ -72,19 +65,23 @@ public class Map
                     tileset[int.Parse(m_Data[y][x])],
                     tileSize
                 );
-                tiles.Add(tile);
+                tilesList.Add(tile);
             }
         }
+        return tilesList;
     }
 
     public void Draw()
     {
-        for (int i = 0; i < tiles.Count; i++)
-        {
-            tiles[i].Draw();
-        }
 
-        Tile lastTile = tiles.Last();
-        y = lastTile.Position.Y;
+        lock (tiles)
+        {
+            for (int i = 0; i < tiles.Count; i++)
+            {
+                tiles[i].Draw();
+            }
+            mapSize.Y = tiles.LastOrDefault()!.Position.Y + tileSize.Y;
+            mapSize.X = tiles.LastOrDefault()!.Position.X + tileSize.X;
+        }
     }
 }

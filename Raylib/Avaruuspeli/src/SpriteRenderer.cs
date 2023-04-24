@@ -26,7 +26,7 @@ class SpriteRenderer
 
     /* Used to store the rectangle that is used to draw the texture. */
     Rectangle sourceRec;
- 
+
     /// <summary>
     /// The constructor for the SpriteRenderer class.
     /// </summary>
@@ -84,6 +84,7 @@ class SpriteRenderer
         this.position = position;
         this.color = color;
         this.size = size;
+        texturePath = null!;
     }
 
     /// <summary>

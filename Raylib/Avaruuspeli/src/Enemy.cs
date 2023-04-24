@@ -5,6 +5,15 @@ using GameEngine6000;
 
 namespace Avaruuspeli;
 
+enum MoveStyle
+{
+    Random,
+    Stationary,
+    ZigZag,
+    Circle,
+    None
+}
+
 /// <summary>
 /// Class <c>Enemy</c> is used to create enemies for the game.
 /// </summary>
@@ -22,6 +31,8 @@ class Enemy : IBehaviour
     /* Creating a new instance of the SpriteRenderer class. */
     public SpriteRenderer sprite;
 
+    public MoveStyle moveStyle = MoveStyle.None;
+
     /// <summary>
     /// The constructor for the Enemy class.
     /// </summary>
@@ -30,6 +41,10 @@ class Enemy : IBehaviour
         transform = new GameEngine6000.Transform(new Vector2(0, 0), 5.0f);
 
         sprite = new SpriteRenderer(new Vector2(0, 0), size, Raylib.WHITE, texture);
+
+        Random random = new Random();
+        moveStyle = (MoveStyle)random.Next(0, Enum.GetNames(typeof(MoveStyle)).Length);
+
     }
 
     /// <summary>
@@ -98,21 +113,69 @@ class Enemy : IBehaviour
             return;
         }
 
-        // Move enemy randomly left or right
-        if (Raylib.GetRandomValue(0, 100) < 50)
+        switch (moveStyle)
         {
-            transform.position.X += transform.velocity;
+            case MoveStyle.Random:
+                MoveRandom();
+                break;
+            case MoveStyle.Stationary:
+                MoveStationary();
+                break;
+            case MoveStyle.ZigZag:
+                MoveZigZag();
+                break;
+            // case MoveStyle.Circle:
+            //     MoveCircle();
+            //     break;
+            // case MoveStyle.None:
+            //     break;
+            default:
+                break;
         }
-        else
+    }
+
+    // TODO: Add more move styles
+    
+    void MoveRandom()
+    {
+        // Move enemy randomly left or right and dont change direction until enemy is outside of the screen
+        if (transform.position.X <= 0)
         {
-            transform.position.X -= transform.velocity;
+            transform.velocity = Math.Abs(transform.velocity);
+        }
+        else if (transform.position.X >= Raylib.GetScreenWidth() - sprite.size.X)
+        {
+            transform.velocity = -Math.Abs(transform.velocity);
         }
 
-        /* Preverts enemy for going outside of the screen*/
-        transform.position.X = Math.Clamp(
-            transform.position.X,
-            0,
-            Raylib.GetScreenWidth() - sprite.size.X
-        );
+        transform.position.X += transform.velocity;
+
+        // Prevent enemy from going outside of the screen
+        transform.position.X = Math.Clamp(transform.position.X, 0, Raylib.GetScreenWidth() - sprite.size.X);
+    }
+
+    // Move stationary
+    void MoveStationary()
+    {
+        // Do nothing
+    }
+
+    // Move zig zag
+    void MoveZigZag()
+    {
+        // Move enemy left and right
+        if (transform.position.X <= 0)
+        {
+            transform.velocity = Math.Abs(transform.velocity);
+        }
+        else if (transform.position.X >= Raylib.GetScreenWidth() - sprite.size.X)
+        {
+            transform.velocity = -Math.Abs(transform.velocity);
+        }
+
+        transform.position.X += transform.velocity;
+
+        // Prevent enemy from going outside of the screen
+        transform.position.X = Math.Clamp(transform.position.X, 0, Raylib.GetScreenWidth() - sprite.size.X);
     }
 }
