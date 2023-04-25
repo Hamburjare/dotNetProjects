@@ -408,7 +408,7 @@ class Invaders
             gameManager.GameOver(Raylib.RED, "Press Enter to restart");
             player.canMove = false;
 
-            if (player.KeyboardMovement)
+            if (!player.KeyboardMovement)
             {
                 Raylib.DrawText(
                     "Want to change to keyboard control? Press 'I'",
