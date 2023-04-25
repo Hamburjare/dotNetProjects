@@ -134,7 +134,7 @@ class Invaders
             string inputInstructions =
                 "You can change input system\nbetween Keyboard and Gamepad by pressing I";
             string howToPlay =
-                "How to play:\nSpace to shoot when using keyboard,\nA to shoot when using gamepad";
+                "How to play:\nSpace to shoot when using keyboard,\nA to shoot when using gamepad,\nWASD or D-Pad to move";
 
             Raylib.DrawText(
                 Title,
