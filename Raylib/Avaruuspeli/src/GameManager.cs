@@ -35,6 +35,13 @@ class GameManager : IBehaviour
         set => health = value;
     }
 
+    int maxHealthPacks = 3;
+
+    public int MaxHealthPacks
+    {
+        get => maxHealthPacks;
+    }
+
     /* Setting the score to 0. */
     int score = 0;
 

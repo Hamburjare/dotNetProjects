@@ -39,7 +39,7 @@ class Invaders
         Vector2 playerTileSize = new(32, 32);
         Vector2 enemyTileSize = new(32, 32);
 
-        string level1Path = @"./Tiled/map.csv";
+        string level1Path = @"./Tiled/level1.csv";
 
         string level2Path = @"./Tiled/level2.csv";
 
@@ -56,6 +56,7 @@ class Invaders
         List<Enemy> enemies = new List<Enemy>();
         List<Bullet> bullets = new List<Bullet>();
         List<Bullet> enemyBullets = new List<Bullet>();
+        List<HealthPack> healthPacks = new List<HealthPack>();
 
         /* Initializing the window and setting the FPS to 60. */
         Raylib.InitWindow(screenWidth, screenHeight, "Space Invaders");
@@ -76,6 +77,7 @@ class Invaders
         Sound shootSound;
         Sound explosionSound;
         Sound hitSound;
+        Sound pickUpSound;
 
         Camera2D camera;
         camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
@@ -93,6 +95,7 @@ class Invaders
         Map map = new Map(level1Path, mapTileSize, tileTextures);
         /* Calling the methods `SpawnEnemies()` and `LoadSounds()` */
         SpawnEnemies();
+        SpawnHealthPacks();
         LoadSounds();
 
         /* A variable that is used to make the player shoot only once every 0.75 seconds. */
@@ -128,10 +131,18 @@ class Invaders
             // Draw the text centered
             string Title = "SPACE INVADERS";
             string Instructions = "Press Enter to start the game";
-            string inputInstructions = "You can change input system\nbetween Keyboard and Gamepad by pressing I";
-            string howToPlay = "How to play:\nSpace to shoot when using keyboard,\nA to shoot when using gamepad";
+            string inputInstructions =
+                "You can change input system\nbetween Keyboard and Gamepad by pressing I";
+            string howToPlay =
+                "How to play:\nSpace to shoot when using keyboard,\nA to shoot when using gamepad";
 
-            Raylib.DrawText(Title, screenWidth / 2 - Title.Length * 5, screenHeight / 2 - 100, 20, Raylib.WHITE);
+            Raylib.DrawText(
+                Title,
+                screenWidth / 2 - Title.Length * 5,
+                screenHeight / 2 - 100,
+                20,
+                Raylib.WHITE
+            );
 
             Raylib.DrawText(
                 Instructions,
@@ -143,7 +154,7 @@ class Invaders
 
             Raylib.DrawText(
                 inputInstructions,
-                screenWidth / 2 - inputInstructions.Length* 2,
+                screenWidth / 2 - inputInstructions.Length * 2,
                 screenHeight / 2,
                 20,
                 Raylib.WHITE
@@ -151,7 +162,7 @@ class Invaders
 
             Raylib.DrawText(
                 howToPlay,
-                screenWidth / 2 - howToPlay.Length*2,
+                screenWidth / 2 - howToPlay.Length * 2,
                 screenHeight / 2 + 70,
                 20,
                 Raylib.WHITE
@@ -195,7 +206,9 @@ class Invaders
                     bullets.Clear();
                     enemyBullets.Clear();
                     enemies.Clear();
+                    healthPacks.Clear();
                     SpawnEnemies();
+                    SpawnHealthPacks();
 
                     player.transform.position = playerStartingPosition;
                     return;
@@ -243,6 +256,12 @@ class Invaders
             if (Raylib.IsKeyPressed(KeyboardKey.KEY_R))
             {
                 RestartGame();
+            }
+
+            // Updating the healthpacks
+            foreach (HealthPack healthPack in healthPacks)
+            {
+                healthPack.Update();
             }
 
             /* Moving the bullets up. Bullets are shooted by player*/
@@ -424,11 +443,13 @@ class Invaders
             bullets.Clear();
             enemyBullets.Clear();
             enemies.Clear();
+            healthPacks.Clear();
 
             player.transform.position = playerStartingPosition;
             player.canMove = true;
             gameManager.Reset();
             SpawnEnemies();
+            SpawnHealthPacks();
         }
 
         /// <summary>
@@ -506,7 +527,9 @@ class Invaders
                     }
                     Bullet bullet = new Bullet(mapTileSize, tileTextures[15]);
                     Vector2 bulletPosition = new Vector2(
-                        enemy.transform.position.X + enemy.sprite.size.X / 2 - bullet.sprite.size.X / 2,
+                        enemy.transform.position.X
+                            + enemy.sprite.size.X / 2
+                            - bullet.sprite.size.X / 2,
                         enemy.transform.position.Y
                     );
                     bullet.moveDirection.Y = enemy.moveDirection.Y;
@@ -530,8 +553,29 @@ class Invaders
         /// </summary>
         void CheckForCollisions()
         {
-            // Player shooted bullets
             Collision collision = new Collision();
+
+            // Healthpacks
+            foreach (HealthPack healthPack in healthPacks)
+            {
+                if (!healthPack.isActive)
+                {
+                    continue;
+                }
+                if (
+                    collision.CheckCollision(
+                        player.sprite.GetRectangle(),
+                        healthPack.sprite.GetRectangle()
+                    )
+                )
+                {
+                    healthPack.isActive = false;
+                    gameManager.Health += 1;
+                    Raylib.PlaySound(pickUpSound);
+                }
+            }
+
+            // Player shooted bullets
             foreach (Enemy enemy in enemies)
             {
                 if (!enemy.isActive)
@@ -658,6 +702,29 @@ class Invaders
             }
         }
 
+        void SpawnHealthPacks()
+        {
+            if (healthPacks.Count == 0)
+            {
+                for (int i = 0; i < gameManager.MaxHealthPacks; i++)
+                {
+                    HealthPack healthPack = new HealthPack(mapTileSize, tileTextures[24]);
+                    healthPack.transform.position = new Vector2(
+                        Raylib.GetRandomValue(0, (int)map.MapSize.X - (int)mapTileSize.X),
+                        Raylib.GetRandomValue(0, (int)map.MapSize.Y - 250)
+                    );
+                    healthPack.isActive = true;
+                    healthPacks.Add(healthPack);
+                }
+            } else
+            {
+                foreach (HealthPack healthPack in healthPacks)
+                {
+                    healthPack.isActive = true;
+                }
+            }
+        }
+
         /// <summary>
         /// Loads the sounds from the resources folder
         /// </summary>
@@ -666,6 +733,7 @@ class Invaders
             hitSound = Raylib.LoadSound("resources/sounds/hit.wav");
             shootSound = Raylib.LoadSound("resources/sounds/shoot.wav");
             explosionSound = Raylib.LoadSound("resources/sounds/explosion.wav");
+            pickUpSound = Raylib.LoadSound("resources/sounds/powerUp.wav");
         }
 
         Raylib.CloseWindow();

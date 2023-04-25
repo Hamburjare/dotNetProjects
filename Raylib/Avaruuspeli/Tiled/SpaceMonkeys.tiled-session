@@ -8,12 +8,20 @@
         "."
     ],
     "fileStates": {
-        "map.tmx": {
-            "scale": 1,
+        "level2.tmx": {
+            "scale": 0.33,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 825,
-                "y": 4696
+                "x": 472.72727272727275,
+                "y": 1127.2727272727273
+            }
+        },
+        "map.tmx": {
+            "scale": 0.75,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 399.9999999999999,
+                "y": 1722.6666666666665
             }
         },
         "testmap.tmx": {
