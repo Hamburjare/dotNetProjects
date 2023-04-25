@@ -116,6 +116,15 @@ class Enemy : IBehaviour
             return;
         }
 
+        if (transform.position.X < 0)
+        {
+            transform.position.X = 0;
+        }
+        else if (transform.position.X > Raylib.GetScreenWidth() - sprite.size.X)
+        {
+            transform.position.X = Raylib.GetScreenWidth() - sprite.size.X;
+        }
+
         switch (moveStyle)
         {
             case MoveStyle.Random:

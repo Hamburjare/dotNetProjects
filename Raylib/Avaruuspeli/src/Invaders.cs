@@ -5,6 +5,19 @@ using GameEngine6000;
 
 namespace Avaruuspeli;
 
+enum GameState
+{
+    MainMenu,
+    Game,
+    GameOver
+}
+
+enum Levels
+{
+    Level1,
+    Level2
+}
+
 ///<summary>
 /// Class <c>Invaders</c> is the main class of the game.
 ///</summary>
@@ -16,6 +29,9 @@ class Invaders
     ///</summary>
     public void Run()
     {
+        GameState gameState = GameState.MainMenu;
+        Levels level = Levels.Level1;
+
         int screenHeight = 900;
         int screenWidth = 800;
 
@@ -23,7 +39,9 @@ class Invaders
         Vector2 playerTileSize = new(32, 32);
         Vector2 enemyTileSize = new(32, 32);
 
-        string mapPath = @"./Tiled/map.csv";
+        string level1Path = @"./Tiled/map.csv";
+
+        string level2Path = @"./Tiled/level2.csv";
 
         string tileTexturePath = @"./Tiled/tiles/";
 
@@ -50,7 +68,8 @@ class Invaders
         List<Texture> tileTextures = new List<Texture>();
 
         /* Creating a new instance of the Player class and the GameManager class. */
-        Player player = new Player(new Vector2(400, 4700), 4.0f, playerTexture, playerTileSize);
+        Vector2 playerStartingPosition = new Vector2(400, 4700);
+        Player player = new Player(playerStartingPosition, 4.0f, playerTexture, playerTileSize);
         GameManager gameManager = new GameManager();
 
         /* Variables for SFX */
@@ -71,24 +90,105 @@ class Invaders
             tileTextures.Add(Raylib.LoadTexture(tileTextureFile));
         }
 
-        Map map = new Map(mapPath, mapTileSize, tileTextures);
+        Map map = new Map(level1Path, mapTileSize, tileTextures);
+        /* Calling the methods `SpawnEnemies()` and `LoadSounds()` */
+        SpawnEnemies();
+        LoadSounds();
 
         /* A variable that is used to make the player shoot only once every 0.75 seconds. */
         float playerShootCooldown = 0.0f;
 
         int enemyShootMultiplier = 1;
 
-        /* Calling the method `Draw()` from the class `Map` */
-        map.Draw();
-
-        /* Calling the methods `SpawnEnemies()` and `LoadSounds()` */
-        SpawnEnemies();
-        LoadSounds();
-
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(Raylib.BLACK);
+            switch (gameState)
+            {
+                case GameState.MainMenu:
+                    MainMenu();
+                    break;
+                case GameState.Game:
+                    Game();
+                    break;
+                case GameState.GameOver:
+                    GameFinished();
+                    break;
+            }
+            Raylib.EndDrawing();
+        }
+
+        void MainMenu()
+        {
+            // Draw the text centered
+            string Title = "SPACE INVADERS";
+            string Instructions = "Press Enter to start the game";
+
+            Raylib.DrawText(Title, screenWidth / 2 - 80, screenHeight / 2 - 100, 20, Raylib.WHITE);
+
+            Raylib.DrawText(
+                Instructions,
+                screenWidth / 2 - 80,
+                screenHeight / 2 - 50,
+                20,
+                Raylib.WHITE
+            );
+
+            if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
+            {
+                gameState = GameState.Game;
+            }
+        }
+
+        void GameFinished()
+        {
+            if (level == Levels.Level1)
+            {
+                Raylib.DrawText(
+                    "Level 1 completed!",
+                    screenWidth / 2 - 80,
+                    screenHeight / 2 - 100,
+                    20,
+                    Raylib.WHITE
+                );
+
+                Raylib.DrawText(
+                    "Press Enter to go to Level 2",
+                    screenWidth / 2 - 80,
+                    screenHeight / 2 - 50,
+                    20,
+                    Raylib.WHITE
+                );
+
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
+                {
+                    gameState = GameState.Game;
+                    map.StartReading(level2Path, mapTileSize, tileTextures);
+                    level = Levels.Level2;
+                    bullets.Clear();
+                    enemyBullets.Clear();
+                    enemies.Clear();
+
+                    player.transform.position = playerStartingPosition;
+                    return;
+                }
+            }
+
+            if (level == Levels.Level2)
+            {
+                gameManager.GameOver(Raylib.WHITE, "Press Enter to go to Main Menu");
+
+                if (Raylib.IsKeyPressed(KeyboardKey.KEY_ENTER))
+                {
+                    gameState = GameState.MainMenu;
+                    RestartGame();
+                }
+            }
+        }
+
+        void Game()
+        {
             Raylib.BeginMode2D(camera);
             camera.target = new(screenWidth / 2, player.transform.position.Y - 125f);
 
@@ -133,7 +233,6 @@ class Invaders
                 }
 
                 bullet.camera = camera;
-                bullet.transform.position.Y -= bullet.transform.velocity;
                 bullet.Update();
             }
 
@@ -180,8 +279,6 @@ class Invaders
 
             /* Updating the game manager. */
             gameManager.Update();
-
-            Raylib.EndDrawing();
         }
 
         void PrevertPlayerFromGoingOffScreen()
@@ -232,10 +329,11 @@ class Invaders
 
             if (allEnemiesDead)
             {
-                if (!gameManager.IsGameOver)
-                {
-                    SpawnEnemies();
-                }
+                if (player.transform.position.Y > 10)
+                    return;
+                gameManager.Time = Raylib.GetTime();
+
+                gameState = GameState.GameOver;
             }
         }
 
@@ -253,7 +351,7 @@ class Invaders
             {
                 enemy.canMove = false;
             }
-            gameManager.GameOver();
+            gameManager.GameOver(Raylib.RED, "Press Enter to restart");
             player.canMove = false;
 
             if (player.KeyboardMovement)
@@ -290,13 +388,9 @@ class Invaders
         {
             bullets.Clear();
             enemyBullets.Clear();
+            enemies.Clear();
 
-            foreach (Enemy enemy in enemies)
-            {
-                enemy.canMove = true;
-                enemy.isActive = true;
-            }
-
+            player.transform.position = playerStartingPosition;
             player.canMove = true;
             gameManager.Reset();
             SpawnEnemies();
@@ -324,9 +418,10 @@ class Invaders
 
                 Bullet bullet = new Bullet(mapTileSize, tileTextures[12]);
                 Vector2 bulletPosition = new Vector2(
-                    player.transform.position.X + player.sprite.size.X / 2,
+                    player.transform.position.X + playerTileSize.X / 2 - bullet.sprite.size.X / 2,
                     player.transform.position.Y
                 );
+                bullet.moveDirection.Y = -1;
                 bullet.SetActive(bulletPosition, 10.0f);
                 bullets.Add(bullet);
 
@@ -376,9 +471,10 @@ class Invaders
                     }
                     Bullet bullet = new Bullet(mapTileSize, tileTextures[15]);
                     Vector2 bulletPosition = new Vector2(
-                        enemy.transform.position.X + enemy.sprite.size.X / 2,
+                        enemy.transform.position.X + enemy.sprite.size.X / 2 - bullet.sprite.size.X / 2,
                         enemy.transform.position.Y
                     );
+                    bullet.moveDirection.Y = enemy.moveDirection.Y;
                     bullet.SetActive(bulletPosition, 5.0f);
                     enemyBullets.Add(bullet);
                 }
@@ -389,7 +485,6 @@ class Invaders
             {
                 bullet.camera = camera;
 
-                bullet.transform.position.Y += bullet.transform.velocity;
                 bullet.Update();
             }
         }

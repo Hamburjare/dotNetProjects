@@ -23,6 +23,8 @@ class Bullet : IBehaviour
     /* Variable for camera */
     public Camera2D camera;
 
+    public Vector2 moveDirection;
+
     /// <summary>
     /// The constructor for the Bullet class.
     /// </summary>
@@ -55,6 +57,8 @@ class Bullet : IBehaviour
         {
             isActive = false;
         }
+
+        transform.position.Y += transform.velocity * moveDirection.Y;
 
         // Draw bullet
         sprite.position = transform.position;

@@ -83,16 +83,16 @@ class GameManager : IBehaviour
     /// </summary>
     public void Update()
     {
-        Raylib.DrawText("Score: " + score, 10, 10, 20, Raylib.WHITE);
-        Raylib.DrawText("Health: " + health, 10, 40, 20, Raylib.WHITE);
+        Raylib.DrawText("Score: " + score, 10, 10, 20, Raylib.BLUE);
+        Raylib.DrawText("Health: " + health, 10, 40, 20, Raylib.BLUE);
         Raylib.DrawText(
             "Score multiplier: " + scoreMultiplier.ToString("n2"),
             10,
             70,
             20,
-            Raylib.WHITE
+            Raylib.BLUE
         );
-        Raylib.DrawText("Switch input mode: I", 10, 100, 20, Raylib.WHITE);
+        Raylib.DrawText("Switch input mode: I", 10, 100, 20, Raylib.BLUE);
     }
 
     /// <summary>
@@ -107,13 +107,13 @@ class GameManager : IBehaviour
         time = 0;
     }
 
-    public void GameOver()
+    public void GameOver(Color color, string message)
     {
         isGameOver = true;
-        Raylib.DrawText("Game Over!", 300, 400, 50, Raylib.RED);
-        Raylib.DrawText("Press Enter to restart", 250, 500, 30, Raylib.RED);
-        Raylib.DrawText("Your score was: " + score, 250, 550, 30, Raylib.RED);
-        Raylib.DrawText("Your time was: " + time, 250, 600, 30, Raylib.RED);
-        Raylib.DrawText("You killed " + enemiesDestroyed + " enemies", 250, 650, 30, Raylib.RED);
+        Raylib.DrawText("Game Over!", 300, 400, 50, color);
+        Raylib.DrawText(message, 250, 500, 30, color);
+        Raylib.DrawText("Your score was: " + score, 250, 550, 30, color);
+        Raylib.DrawText("Your time was: " + time, 250, 600, 30, color);
+        Raylib.DrawText("You killed " + enemiesDestroyed + " enemies", 250, 650, 30, color);
     }
 }

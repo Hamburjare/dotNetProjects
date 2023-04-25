@@ -19,7 +19,6 @@ public class Map
         get { return mapSize; }
     }
 
-
     // csv file has a unknow number of rows and columns,
     // so we need to read it line by line
     // each index in the line is a tile index in tileset
@@ -27,8 +26,16 @@ public class Map
 
     public Map(string mapFile, Vector2 size, List<Texture> tileset)
     {
+        StartReading(mapFile, size, tileset);
+    }
+
+    public void StartReading(string mapFile, Vector2 size, List<Texture> tileset)
+    {
         tileSize = size;
+        tiles.Clear();
         tiles = ReadCSVFile(mapFile, tileset);
+        mapSize.Y = tiles.LastOrDefault()!.Position.Y + tileSize.Y;
+        mapSize.X = tiles.LastOrDefault()!.Position.X + tileSize.X;
     }
 
     List<Tile> ReadCSVFile(string mapFile, List<Texture> tileset)
@@ -73,15 +80,12 @@ public class Map
 
     public void Draw()
     {
-
         lock (tiles)
         {
             for (int i = 0; i < tiles.Count; i++)
             {
                 tiles[i].Draw();
             }
-            mapSize.Y = tiles.LastOrDefault()!.Position.Y + tileSize.Y;
-            mapSize.X = tiles.LastOrDefault()!.Position.X + tileSize.X;
         }
     }
 }
