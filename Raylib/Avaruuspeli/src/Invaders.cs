@@ -119,18 +119,40 @@ class Invaders
             Raylib.EndDrawing();
         }
 
+        /// <summary>
+        /// The MainMenu function displays the game's title, instructions, input instructions, and how
+        /// to play, and waits for the player to press Enter to start the game.
+        /// </summary>
         void MainMenu()
         {
             // Draw the text centered
             string Title = "SPACE INVADERS";
             string Instructions = "Press Enter to start the game";
+            string inputInstructions = "You can change input system\nbetween Keyboard and Gamepad by pressing I";
+            string howToPlay = "How to play:\nSpace to shoot when using keyboard,\nA to shoot when using gamepad";
 
-            Raylib.DrawText(Title, screenWidth / 2 - 80, screenHeight / 2 - 100, 20, Raylib.WHITE);
+            Raylib.DrawText(Title, screenWidth / 2 - Title.Length * 5, screenHeight / 2 - 100, 20, Raylib.WHITE);
 
             Raylib.DrawText(
                 Instructions,
-                screenWidth / 2 - 80,
+                screenWidth / 2 - Instructions.Length * 5,
                 screenHeight / 2 - 50,
+                20,
+                Raylib.WHITE
+            );
+
+            Raylib.DrawText(
+                inputInstructions,
+                screenWidth / 2 - inputInstructions.Length* 2,
+                screenHeight / 2,
+                20,
+                Raylib.WHITE
+            );
+
+            Raylib.DrawText(
+                howToPlay,
+                screenWidth / 2 - howToPlay.Length*2,
+                screenHeight / 2 + 70,
                 20,
                 Raylib.WHITE
             );
@@ -141,6 +163,10 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// The function displays a message and allows the player to progress to the next level or
+        /// return to the main menu depending on the current level and player input.
+        /// </summary>
         void GameFinished()
         {
             if (level == Levels.Level1)
@@ -169,6 +195,7 @@ class Invaders
                     bullets.Clear();
                     enemyBullets.Clear();
                     enemies.Clear();
+                    SpawnEnemies();
 
                     player.transform.position = playerStartingPosition;
                     return;
@@ -187,6 +214,10 @@ class Invaders
             }
         }
 
+        /// <summary>
+        /// This function updates and renders the game world, including the player, enemies, bullets,
+        /// and map, and checks for collisions and game progress.
+        /// </summary>
         void Game()
         {
             Raylib.BeginMode2D(camera);
@@ -281,6 +312,10 @@ class Invaders
             gameManager.Update();
         }
 
+        /// <summary>
+        /// This function prevents the player from going off the screen by clamping their position
+        /// within the screen boundaries.
+        /// </summary>
         void PrevertPlayerFromGoingOffScreen()
         {
             // Prevert player from going off camera
@@ -367,7 +402,7 @@ class Invaders
             else
             {
                 Raylib.DrawText(
-                    "Want to change to mouse control? Press 'I'",
+                    "Want to change to gamepad control? Press 'I'",
                     70,
                     700,
                     30,
@@ -406,7 +441,7 @@ class Invaders
                 Raylib.IsKeyPressed(KeyboardKey.KEY_SPACE)
                     && playerShootCooldown <= 0
                     && player.KeyboardMovement
-                || Raylib.IsMouseButtonPressed(0)
+                || Raylib.IsGamepadButtonDown(0, GamepadButton.GAMEPAD_BUTTON_RIGHT_FACE_DOWN)
                     && playerShootCooldown <= 0
                     && !player.KeyboardMovement
             )

@@ -23,8 +23,10 @@ class Player : IBehaviour
     //If true player uses keyboard if false player uses mouse
     bool keyboardMovement = true;
 
-    public bool KeyboardMovement { get => keyboardMovement;}
-    
+    public bool KeyboardMovement
+    {
+        get => keyboardMovement;
+    }
 
     /// <summary>
     /// The constructor for the Player class.
@@ -34,15 +36,13 @@ class Player : IBehaviour
     public Player(Vector2 position, float maxVelocity, Texture texture, Vector2 size)
     {
         transform = new GameEngine6000.Transform(position, 0.0f, maxVelocity, .3f, 0.3f);
-        sprite = new SpriteRenderer(
-            new Vector2(0,0),
-            size,
-            Raylib.WHITE,
-            texture
-        );
+        sprite = new SpriteRenderer(new Vector2(0, 0), size, Raylib.WHITE, texture);
     }
 
-
+    /// <summary>
+    /// This function reads the directional input from a gamepad and returns a Vector2 representing the
+    /// direction.
+    /// </summary>
     public Vector2 ReadDirectionInput()
     {
         Vector2 direction = Vector2.Zero;
@@ -69,6 +69,37 @@ class Player : IBehaviour
     }
 
     /// <summary>
+    /// This function reads the directional input from a gamepad and returns a Vector2 representing the
+    /// direction.
+    /// </summary>
+    public Vector2 ReadDirectionInputGamePad()
+    {
+        Vector2 direction = Vector2.Zero;
+        direction.X = 0;
+        direction.Y = 0;
+
+        if (Raylib.IsGamepadButtonDown(0, GamepadButton.GAMEPAD_BUTTON_LEFT_FACE_RIGHT))
+        {
+            direction.X = 1;
+        }
+        else if (Raylib.IsGamepadButtonDown(0, GamepadButton.GAMEPAD_BUTTON_LEFT_FACE_LEFT))
+        {
+            direction.X = -1;
+        }
+
+        if (Raylib.IsGamepadButtonDown(0, GamepadButton.GAMEPAD_BUTTON_LEFT_FACE_UP))
+        {
+            direction.Y = -1;
+        }
+        else if (Raylib.IsGamepadButtonDown(0, GamepadButton.GAMEPAD_BUTTON_LEFT_FACE_DOWN))
+        {
+            direction.Y = 1;
+        }
+
+        return direction;
+    }
+
+    /// <summary>
     /// Method <c>Update</c> is used to update the player.
     /// </summary>
     /// <remarks>
@@ -85,8 +116,8 @@ class Player : IBehaviour
         }
         else
         {
-            // Mouse movement
-            MouseMovement();
+            // GamePad movement
+            GamePadMovement();
         }
 
         if (Raylib.IsKeyPressed(KeyboardKey.KEY_I))
@@ -97,30 +128,61 @@ class Player : IBehaviour
         // Draw player
         sprite.position = transform.position;
         sprite.Draw();
-
     }
 
     /// <summary>
-    /// Method <c>MouseMovement</c> is used to move the player with the mouse.
+    /// Method <c>GamePadMovement</c> is used to move the player with a gamepad.
     /// </summary>
-    /// <remarks>
-    /// The method gets the mouse position.
-    /// The method sets the player's position to the mouse's position.
-    /// </remarks>
-    void MouseMovement()
+    void GamePadMovement()
     {
         if (!canMove)
         {
             return;
         }
 
-        // Follow mouse
-        Vector2 mousePosition = Raylib.GetMousePosition();
-        Vector2 direction = mousePosition;
-        direction = Vector2.Normalize(direction);
-        transform.direction = direction;
-        transform.position = mousePosition - sprite.size / 2;
+        if (!Raylib.IsGamepadAvailable(0))
+        {
+            Console.WriteLine("Gamepad not available");
+            return;
+        }
 
+        Vector2 newDirection = ReadDirectionInputGamePad();
+
+        // If the player is not moving, slow down
+
+        if (newDirection.X == 0 && newDirection.Y == 0)
+        {
+            transform.velocity -= transform.sluggishness;
+            if (transform.velocity < 0)
+            {
+                transform.velocity = 0;
+            }
+        }
+        else
+        {
+            transform.velocity += transform.acceleration;
+            if (transform.velocity > transform.maxVelocity)
+            {
+                transform.velocity = transform.maxVelocity;
+            }
+            if (
+                newDirection.X > 0 && transform.direction.Y > 0
+                || newDirection.X < 0 && transform.direction.Y < 0
+                || newDirection.Y > 0 && transform.direction.X < 0
+                || newDirection.Y < 0 && transform.direction.X > 0
+            )
+            {
+                newDirection /= 1.25f;
+            }
+            if (transform.direction != newDirection)
+            {
+                transform.velocity -= transform.sluggishness * 2;
+            }
+
+            transform.direction = newDirection;
+        }
+
+        transform.position += transform.direction * transform.velocity;
     }
 
     /// <summary>

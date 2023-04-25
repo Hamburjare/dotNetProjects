@@ -137,9 +137,10 @@ class Enemy : IBehaviour
                 break;
         }
     }
-
-    // TODO: Add more move styles
     
+    /// <summary>
+    /// Method <c>MoveRandom</c> is used to move the enemy randomly left or right.
+    /// </summary>
     void MoveRandom()
     {
         // Move enemy randomly left or right and dont change direction until enemy is outside of the screen use moveDirection
@@ -153,7 +154,9 @@ class Enemy : IBehaviour
         
     }
 
-    // Move stationary
+    /// <summary>
+    /// Method <c>MoveStationary</c> is used to move the enemy down.
+    /// </summary>
     void MoveStationary()
     {
         transform.position.Y += transform.velocity * moveDirection.Y;

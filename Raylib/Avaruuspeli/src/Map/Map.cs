@@ -19,16 +19,22 @@ public class Map
         get { return mapSize; }
     }
 
-    // csv file has a unknow number of rows and columns,
-    // so we need to read it line by line
-    // each index in the line is a tile index in tileset
-    // width and height of the map is the number of rows and columns
-
     public Map(string mapFile, Vector2 size, List<Texture> tileset)
     {
         StartReading(mapFile, size, tileset);
     }
 
+    /// <summary>
+    /// This function starts reading a map file and takes in the size and tileset as parameters.
+    /// </summary>
+    /// <param name="mapFile">The file path or name of the map file that contains the data for the game
+    /// map.</param>
+    /// <param name="Vector2">Vector2 is a data type in Unity that represents a 2D vector with x and y
+    /// components. It is often used to represent positions, directions, and sizes in 2D space. In this
+    /// context, the Vector2 size parameter is likely used to specify the size of the map being
+    /// read</param>
+    /// <param name="tileset">The `tileset` parameter is a list of textures that contains all the images
+    /// of the tiles used in the map. These textures are used to render the map on the screen.</param>
     public void StartReading(string mapFile, Vector2 size, List<Texture> tileset)
     {
         tileSize = size;
@@ -38,6 +44,14 @@ public class Map
         mapSize.X = tiles.LastOrDefault()!.Position.X + tileSize.X;
     }
 
+    /// <summary>
+    /// This function reads a CSV file and returns a list of Tile objects using a provided list of
+    /// textures.
+    /// </summary>
+    /// <param name="mapFile">The file path or name of the CSV file that contains the map data.</param>
+    /// <param name="tileset">The `tileset` parameter is a list of `Texture` objects that represent the
+    /// images used for each tile in the map. These textures are used to render the map on the
+    /// screen.</param>
     List<Tile> ReadCSVFile(string mapFile, List<Texture> tileset)
     {
         List<Tile> tilesList = new();
@@ -78,6 +92,9 @@ public class Map
         return tilesList;
     }
 
+    /// <summary>
+    /// This function draws the map on the screen.
+    /// </summary>
     public void Draw()
     {
         lock (tiles)

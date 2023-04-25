@@ -39,6 +39,9 @@ public class Tile
         set { position = value; }
     }
 
+    /// <summary>
+    /// This function draws the tile to the screen.
+    /// </summary>
     public void Draw()
     {
         sprite.position = position;
