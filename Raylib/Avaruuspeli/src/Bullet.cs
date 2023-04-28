@@ -52,12 +52,6 @@ class Bullet : IBehaviour
 
         Vector2 bulletPositionInScreen = Raylib.GetWorldToScreen2D(transform.position, camera);
 
-        // If bullet goes off screen from below, set it to inactive
-        if (bulletPositionInScreen.Y > Raylib.GetScreenHeight())
-        {
-            isActive = false;
-        }
-
         transform.position.Y += transform.velocity * moveDirection.Y;
 
         // Draw bullet
